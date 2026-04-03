@@ -14,11 +14,11 @@ Route::get('/ping', function () {
 // Public coupon routes
 Route::post('/coupons/apply', [\App\Http\Controllers\CouponController::class, 'apply']);
 Route::get('/coupons/auto-apply', [\App\Http\Controllers\CouponController::class, 'autoApply']);
-Route::post('/customer/login', [\App\Http\Controllers\CustomerAuthController::class, 'login']);
+Route::middleware('throttle:10,1')->post('/customer/login', [\App\Http\Controllers\CustomerAuthController::class, 'login']);
 
 // Auth routes (Sanctum)
 Route::prefix('admin')->group(function () {
-    Route::post('/login', [\App\Http\Controllers\Admin\AuthController::class, 'login']);
+    Route::middleware('throttle:5,1')->post('/login', [\App\Http\Controllers\Admin\AuthController::class, 'login']);
 
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('/logout', [\App\Http\Controllers\Admin\AuthController::class, 'logout']);
@@ -95,7 +95,7 @@ Route::post('/my-orders', [\App\Http\Controllers\CustomerOrderController::class,
 Route::post('/my-favorites/list', [\App\Http\Controllers\CustomerFavoriteController::class, 'index']);
 Route::post('/my-favorites', [\App\Http\Controllers\CustomerFavoriteController::class, 'store']);
 Route::delete('/my-favorites/{id}', [\App\Http\Controllers\CustomerFavoriteController::class, 'destroy']);
-Route::post('/mpesa/callback', [\App\Http\Controllers\MpesaController::class, 'callback']);
+Route::middleware(['mpesa.callback', 'throttle:30,1'])->post('/mpesa/callback', [\App\Http\Controllers\MpesaController::class, 'callback']);
 Route::get('/mpesa/verify/{reference}', [\App\Http\Controllers\MpesaController::class, 'verify']);
 
 Route::middleware('auth:sanctum')->group(function () {

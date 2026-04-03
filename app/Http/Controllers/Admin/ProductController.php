@@ -432,7 +432,7 @@ class ProductController extends Controller
     {
         $request->validate([
             'images'          => ['required', 'array', 'min:1'],
-            'images.*'        => ['required', 'image', 'max:5120'],
+            'images.*'        => ['required', 'image', 'mimes:jpeg,jpg,png,gif,webp', 'max:5120'],
             'primary_index'   => ['nullable', 'integer'],
         ]);
 

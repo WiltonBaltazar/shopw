@@ -101,7 +101,7 @@ class SettingsController extends Controller
             ]);
         } else {
             $request->validate([
-                'image' => ['required', 'image', 'max:5120'],
+                'image' => ['required', 'image', 'mimes:jpeg,jpg,png,gif,webp', 'max:5120'],
             ]);
         }
 
