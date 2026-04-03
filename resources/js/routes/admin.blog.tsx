@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Plus, Pencil, Trash2, X, Check, Globe, EyeOff, ImagePlus, Trash, Bold, Italic, Underline as UnderlineIcon, List, ListOrdered, Heading2, Heading3, Quote } from 'lucide-react'
+import { Plus, Pencil, Trash2, X, Check, Globe, EyeOff, ImagePlus, Trash, Bold, Italic, Underline as UnderlineIcon, List, ListOrdered, Heading2, Heading3, Quote, Pin } from 'lucide-react'
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Underline from '@tiptap/extension-underline'
@@ -98,6 +98,7 @@ const EMPTY_FORM = {
   excerpt: '',
   content: '',
   is_published: false,
+  is_sticky: false,
   sort_order: 0,
 }
 
@@ -179,6 +180,7 @@ function BlogPage() {
       excerpt: p.excerpt,
       content: p.content,
       is_published: p.is_published,
+      is_sticky: p.is_sticky,
       sort_order: p.sort_order,
     })
     setSlugManual(true)
@@ -230,6 +232,7 @@ function BlogPage() {
     fd.append('excerpt', form.excerpt)
     fd.append('content', form.content)
     fd.append('is_published', form.is_published ? '1' : '0')
+    fd.append('is_sticky', form.is_sticky ? '1' : '0')
     fd.append('sort_order', String(form.sort_order))
     if (coverFile) {
       fd.append('cover_image', coverFile)
@@ -397,6 +400,24 @@ function BlogPage() {
                   </button>
                   <span className="text-xs text-stone-600">Publicado</span>
                 </div>
+                <div className="flex items-center gap-2 mt-5">
+                  <button
+                    type="button"
+                    onClick={() => setForm((f) => ({ ...f, is_sticky: !f.is_sticky }))}
+                    className={cn(
+                      'w-9 h-5 rounded-full transition-colors relative',
+                      form.is_sticky ? 'bg-amber-500' : 'bg-stone-200',
+                    )}
+                  >
+                    <span
+                      className={cn(
+                        'absolute top-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform',
+                        form.is_sticky ? 'translate-x-4' : 'translate-x-0.5',
+                      )}
+                    />
+                  </button>
+                  <span className="text-xs text-stone-600">Fixar no topo</span>
+                </div>
               </div>
 
               <div className="flex justify-end gap-3 pt-2">
@@ -484,6 +505,12 @@ function BlogPage() {
                   <div className="flex items-center gap-3 mb-1 flex-wrap">
                     <span className="text-sm font-semibold text-stone-800">{p.title}</span>
                     <span className="text-[11px] font-mono text-stone-400">/{p.slug}</span>
+                    {p.is_sticky && (
+                      <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 ring-1 ring-amber-200">
+                        <Pin size={10} />
+                        Fixo
+                      </span>
+                    )}
                     {p.published_at && (
                       <span className="text-[10px] text-stone-300">
                         {new Date(p.published_at).toLocaleDateString('pt-MZ')}

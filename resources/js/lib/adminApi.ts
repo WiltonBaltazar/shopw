@@ -544,6 +544,7 @@ export interface AdminBlogPost {
   content: string
   cover_image_url: string | null
   is_published: boolean
+  is_sticky: boolean
   published_at: string | null
   sort_order: number
   created_at: string

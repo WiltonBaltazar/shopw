@@ -13,7 +13,7 @@ class BlogPostController extends Controller
 {
     public function index(): JsonResponse
     {
-        $posts = BlogPost::orderBy('sort_order')->orderByDesc('id')->get();
+        $posts = BlogPost::orderByDesc('is_sticky')->orderBy('sort_order')->orderByDesc('id')->get();
 
         return response()->json(['data' => $posts]);
     }
@@ -27,6 +27,7 @@ class BlogPostController extends Controller
             'content'      => 'required|string',
             'cover_image'  => 'nullable|image|max:5120',
             'is_published' => 'boolean',
+            'is_sticky'    => 'boolean',
             'sort_order'   => 'integer',
         ]);
 
@@ -58,6 +59,7 @@ class BlogPostController extends Controller
             'cover_image'        => 'nullable|image|max:5120',
             'remove_cover_image' => 'boolean',
             'is_published'       => 'boolean',
+            'is_sticky'          => 'boolean',
             'sort_order'         => 'integer',
         ]);
 

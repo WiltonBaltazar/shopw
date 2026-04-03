@@ -201,6 +201,7 @@ export interface BlogPost {
   excerpt: string
   content: string
   cover_image_url: string | null
+  is_sticky: boolean
   published_at: string | null
 }
 
