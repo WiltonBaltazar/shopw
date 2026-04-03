@@ -366,6 +366,7 @@ class OrderController extends Controller
 
         $responseCode       = $mpesaResult['response_code'] ?? null;
         $transactionId      = $mpesaResult['transaction_id'] ?? null;
+        $requestSent        = $mpesaResult['request_sent'] ?? null;
         $txStatus           = 'pending';
         $orderPaymentStatus = 'pending';
 
@@ -397,6 +398,16 @@ class OrderController extends Controller
                 'response_code' => $responseCode,
             ]);
             $order->update(['payment_status' => 'pending']);
+
+        } elseif ($requestSent === false) {
+            // Could not even build/send the request (e.g. token generation/config issue).
+            $txStatus = 'failed';
+            $orderPaymentStatus = 'failed';
+            Log::error('Mpesa request was not sent.', [
+                'reference' => $order->reference,
+                'error'     => $mpesaResult['technical_message'] ?? $mpesaResult['message'] ?? 'unknown',
+            ]);
+            $order->update(['payment_status' => 'failed']);
 
         } elseif (!array_key_exists('response_code', $mpesaResult)) {
             // Connection error — no response from M-Pesa, cannot know if charged

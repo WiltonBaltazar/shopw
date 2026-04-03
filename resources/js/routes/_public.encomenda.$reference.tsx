@@ -165,6 +165,7 @@ function OrderPage() {
   const [verifying, setVerifying] = useState(false)
   const [retrying, setRetrying] = useState(false)
   const [retryError, setRetryError] = useState('')
+  const [retryMessage, setRetryMessage] = useState('')
 
   // Poll every 10 seconds while pending/confirmed/preparing
   useEffect(() => {
@@ -179,6 +180,7 @@ function OrderPage() {
   async function handleVerify() {
     setVerifying(true)
     setRetryError('')
+    setRetryMessage('')
     try {
       const { data } = await api.get(`/mpesa/verify/${reference}`)
       if (data.no_transaction) {
@@ -193,8 +195,16 @@ function OrderPage() {
   async function handleRetryPayment() {
     setRetrying(true)
     setRetryError('')
+    setRetryMessage('')
     try {
-      await api.post(`/orders/${reference}/pay`)
+      const res = await api.post(`/orders/${reference}/pay`)
+      const status = res.data.data?.payment_status
+      const message = res.data.message ?? ''
+      if (status === 'failed') {
+        setRetryError(message || 'Pagamento falhou. Tente novamente.')
+      } else {
+        setRetryMessage(message || 'Pedido enviado. Confirme no telemóvel com o PIN M-Pesa.')
+      }
       queryClient.invalidateQueries({ queryKey: ['order', reference] })
     } catch (err: unknown) {
       const e = err as { response?: { data?: { message?: string } } }
@@ -298,6 +308,7 @@ function OrderPage() {
               {retrying ? 'A iniciar pagamento...' : 'Não recebi o pedido — pagar agora'}
             </button>
           </div>
+          {retryMessage && <p className="text-xs text-amber-800 font-medium mt-3 pl-7">{retryMessage}</p>}
           {retryError && <p className="text-xs text-red-600 mt-3 pl-7">{retryError}</p>}
         </div>
       )}

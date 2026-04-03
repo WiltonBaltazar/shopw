@@ -95,7 +95,7 @@ Route::post('/my-orders', [\App\Http\Controllers\CustomerOrderController::class,
 Route::post('/my-favorites/list', [\App\Http\Controllers\CustomerFavoriteController::class, 'index']);
 Route::post('/my-favorites', [\App\Http\Controllers\CustomerFavoriteController::class, 'store']);
 Route::delete('/my-favorites/{id}', [\App\Http\Controllers\CustomerFavoriteController::class, 'destroy']);
-Route::middleware(['mpesa.callback', 'throttle:30,1'])->post('/mpesa/callback', [\App\Http\Controllers\MpesaController::class, 'callback']);
+Route::middleware('throttle:30,1')->post('/mpesa/callback', [\App\Http\Controllers\MpesaController::class, 'callback']);
 Route::get('/mpesa/verify/{reference}', [\App\Http\Controllers\MpesaController::class, 'verify']);
 
 Route::middleware('auth:sanctum')->group(function () {

@@ -48,20 +48,27 @@ class MpesaService
         $bearerToken = $this->generateAuthorizationToken();
 
         if (!$bearerToken) {
+            Log::error('Mpesa token generation failed before C2B request.', [
+                'has_api_key' => $this->apiKey !== '',
+                'has_public_key' => trim($this->publicKeyStr) !== '',
+            ]);
+
             return [
-                'success' => false,
-                'message' => 'Serviço de pagamento indisponível no momento. Tente novamente em alguns minutos.',
+                'success'           => false,
+                'message'           => 'Serviço de pagamento indisponível no momento. Tente novamente em alguns minutos.',
+                'request_sent'      => false,
+                'technical_message' => 'token_generation_failed',
             ];
         }
 
         $formattedAmount = (string) (int) $amount;
         $formattedPhone = $this->formatPhoneNumber($phoneNumber);
-        $mpesaReference = preg_replace('/[^A-Za-z0-9]/', '', $reference);
+        $mpesaReference = $this->formatThirdPartyReference($reference);
 
         // input_TransactionReference must be unique per attempt to prevent INS-10 duplicate
         // errors on retries and second instalments. Append a 6-char timestamp suffix.
-        // input_ThirdPartyReference stays as the clean order reference so callbacks can
-        // find the order via Order::where('reference', ...).
+        // input_ThirdPartyReference must be alphanumeric for M-Pesa endpoints.
+        // We normalize it consistently and map it back to the order on callback.
         $uniqueTxRef = substr($mpesaReference, 0, 14) . substr((string) time(), -6);
 
         $payload = [
@@ -120,6 +127,7 @@ class MpesaService
             return [
                 'success'           => false,
                 'message'           => $this->humanizeTransportError($e->getMessage(), 'payment') ?? $this->defaultUserMessage('payment'),
+                'request_sent'      => null,
                 'technical_message' => $e->getMessage(),
             ];
         }
@@ -131,7 +139,7 @@ class MpesaService
     public function queryTransactionStatus(string $queryReference, string $thirdPartyReference): array
     {
         $queryParams = http_build_query([
-            'input_ThirdPartyReference' => $thirdPartyReference,
+            'input_ThirdPartyReference' => $this->formatThirdPartyReference($thirdPartyReference),
             'input_QueryReference'      => $queryReference,
             'input_ServiceProviderCode' => $this->serviceProviderCode,
         ]);
@@ -209,6 +217,15 @@ class MpesaService
     public function normalizeProviderStatus(?string $status): string
     {
         return strtoupper(trim((string) $status));
+    }
+
+    /**
+     * M-Pesa expects alphanumeric references only.
+     * Keep this formatter centralized so payment initiation and status query always match.
+     */
+    public function formatThirdPartyReference(string $reference): string
+    {
+        return preg_replace('/[^A-Za-z0-9]/', '', $reference) ?? '';
     }
 
     public function isSuccessfulResponseCode(?string $responseCode): bool

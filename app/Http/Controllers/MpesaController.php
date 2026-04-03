@@ -34,16 +34,40 @@ class MpesaController extends Controller
             return response()->json(['message' => 'OK']);
         }
 
-        $order = Order::where('reference', $reference)->first();
+        $order = $this->findOrderFromCallbackReference($reference);
         if (!$order) {
             Log::warning('MPesa callback: order not found', ['reference' => $reference]);
             return response()->json(['message' => 'OK']);
         }
 
-        $mpesa = app(MpesaService::class);
-        $success = $mpesa->isSuccessfulResponseCode($responseCode) || $responseCode === 'success';
-
         $transaction = MpesaTransaction::where('order_id', $order->id)->first();
+
+        $mpesa = app(MpesaService::class);
+        $claimedSuccess = $mpesa->isSuccessfulResponseCode($responseCode) || $responseCode === 'success';
+
+        // Never trust the callback payload alone — verify with M-Pesa query API first.
+        // This prevents spoofed callbacks from marking orders as paid.
+        $success = false;
+        if ($claimedSuccess) {
+            $transactionId = $transactionId ?: $transaction?->transaction_id;
+
+            if (!$transactionId) {
+                // Cannot verify without a transaction ID — leave pending for the poller.
+                Log::warning('MPesa callback: claimed success but no transaction ID.', ['reference' => $reference]);
+                return response()->json(['message' => 'OK']);
+            }
+
+            $queryResult = $mpesa->queryTransactionStatus($transactionId, $order->reference);
+            $success = $queryResult['success'] && $mpesa->isSuccessfulTransactionStatus($queryResult['status'] ?? null);
+
+            if (!$success) {
+                Log::warning('MPesa callback: claimed success but query did not confirm.', [
+                    'reference'      => $reference,
+                    'transaction_id' => $transactionId,
+                ]);
+                return response()->json(['message' => 'OK']);
+            }
+        }
 
         if ($transaction) {
             $transaction->update([
@@ -69,6 +93,24 @@ class MpesaController extends Controller
         }
 
         return response()->json(['message' => 'OK']);
+    }
+
+    private function findOrderFromCallbackReference(string $reference): ?Order
+    {
+        $order = Order::where('reference', $reference)->first();
+        if ($order) {
+            return $order;
+        }
+
+        $normalizedReference = preg_replace('/[^A-Za-z0-9]/', '', strtoupper($reference));
+        if (!$normalizedReference) {
+            return null;
+        }
+
+        return Order::query()
+            ->whereRaw("REPLACE(UPPER(reference), '-', '') = ?", [$normalizedReference])
+            ->latest('id')
+            ->first();
     }
 
     /**
