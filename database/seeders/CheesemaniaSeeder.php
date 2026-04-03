@@ -13,27 +13,31 @@ use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Schema;
 
 class CheesemaniaSeeder extends Seeder
 {
     public function run(): void
     {
         // ── Truncate in dependency order ──────────────
-        DB::statement('PRAGMA foreign_keys = OFF');
-        DB::table('option_rules')->delete();
-        DB::table('variant_attribute_values')->delete();
-        DB::table('order_item_addons')->delete();
-        DB::table('order_items')->delete();
-        DB::table('mpesa_transactions')->delete();
-        DB::table('orders')->delete();
-        DB::table('product_variants')->delete();
-        DB::table('product_attribute_values')->delete();
-        DB::table('product_attributes')->delete();
-        DB::table('product_addons')->delete();
-        DB::table('product_images')->delete();
-        DB::table('products')->delete();
-        DB::table('categories')->delete();
-        DB::statement('PRAGMA foreign_keys = ON');
+        Schema::disableForeignKeyConstraints();
+        try {
+            DB::table('option_rules')->delete();
+            DB::table('variant_attribute_values')->delete();
+            DB::table('order_item_addons')->delete();
+            DB::table('order_items')->delete();
+            DB::table('mpesa_transactions')->delete();
+            DB::table('orders')->delete();
+            DB::table('product_variants')->delete();
+            DB::table('product_attribute_values')->delete();
+            DB::table('product_attributes')->delete();
+            DB::table('product_addons')->delete();
+            DB::table('product_images')->delete();
+            DB::table('products')->delete();
+            DB::table('categories')->delete();
+        } finally {
+            Schema::enableForeignKeyConstraints();
+        }
 
         // ── Admin user ────────────────────────────────
         User::updateOrCreate(
