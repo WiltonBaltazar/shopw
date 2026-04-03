@@ -1,0 +1,82 @@
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Poppins", system-ui, sans-serif;
+  --font-sans:  "Poppins", system-ui, sans-serif;
+
+  --color-primary-50:  #f3f2f8;
+  --color-primary-100: #e6e4f1;
+  --color-primary-200: #cdc9e3;
+  --color-primary-300: #b3aed5;
+  --color-primary-400: #9790be;
+  --color-primary-500: #685D94;
+  --color-primary-600: #5a5082;
+  --color-primary-700: #4c4370;
+  --color-primary-800: #3d365a;
+
+  /* Semantic surface tokens */
+  --color-surface:         #ffffff;
+  --color-surface-muted:   #faf8f5;
+  --color-surface-sunken:  #f4f1ec;
+
+  /* Semantic text tokens */
+  --color-text-primary:    #1c1917;
+  --color-text-secondary:  #78716c;
+  --color-text-muted:      #a8a29e;
+  --color-text-inverse:    #ffffff;
+
+  /* Semantic border tokens */
+  --color-border:          #e8e3dc;
+  --color-border-muted:    #f0ece6;
+
+  /* Status colors */
+  --color-success:         #16a34a;
+  --color-success-light:   #f0fdf4;
+  --color-warning:         #d97706;
+  --color-warning-light:   #fffbeb;
+  --color-error:           #dc2626;
+  --color-error-light:     #fef2f2;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Hide scrollbar for touch carousels */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+html {
+  background-color: #faf8f5;
+}
+
+body {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  color: #292524;
+  background-color: #faf8f5;
+}
+
+/* Form input base */
+input[type="text"],
+input[type="tel"],
+input[type="email"],
+input[type="date"],
+input[type="time"],
+input[type="number"],
+select,
+textarea {
+  font-family: var(--font-sans);
+}
+
+/* Refined focus ring */
+.focus-ring {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(104, 93, 148, 0.15);
+  border-color: #9790be;
+}
