@@ -312,17 +312,6 @@ function CheckoutPage() {
   const discountAmount = appliedCoupon?.discount ?? 0
   const grandTotal = Math.max(0, cartTotal + deliveryFee - discountAmount)
 
-  if (items.length === 0) {
-    return (
-      <div className="max-w-lg mx-auto px-4 py-24 text-center">
-        <p className="text-stone-400 mb-4">O carrinho está vazio.</p>
-        <button onClick={() => navigate({ to: '/menu' })} className="text-primary-600 hover:underline text-sm">
-          Ver o menu
-        </button>
-      </div>
-    )
-  }
-
   function set(field: keyof FormState, value: string) {
     setForm((f) => {
       const next = { ...f, [field]: value }
@@ -364,6 +353,17 @@ function CheckoutPage() {
       // Silent
     }
   }, [autoApplyChecked, appliedCoupon, items, cartTotal])
+
+  if (items.length === 0) {
+    return (
+      <div className="max-w-lg mx-auto px-4 py-24 text-center">
+        <p className="text-stone-400 mb-4">O carrinho está vazio.</p>
+        <button onClick={() => navigate({ to: '/menu' })} className="text-primary-600 hover:underline text-sm">
+          Ver o menu
+        </button>
+      </div>
+    )
+  }
 
   async function applyCoupon() {
     const code = couponInput.trim().toUpperCase()
