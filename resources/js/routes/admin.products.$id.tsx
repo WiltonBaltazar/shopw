@@ -114,7 +114,16 @@ function ProductEditPage() {
 
   const deleteProdMut = useMutation({
     mutationFn: () => deleteProduct(Number(id)),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['admin', 'products'] }); navigate({ to: '/admin/products' }) },
+    onSuccess: (data: any) => {
+      qc.invalidateQueries({ queryKey: ['admin', 'products'] })
+      navigate({
+        to: '/admin/products',
+        search: {
+          toast: data?.message ?? 'Produto removido.',
+          toastType: data?.archived ? 'info' : 'success',
+        },
+      })
+    },
   })
 
   if (isLoading) return (

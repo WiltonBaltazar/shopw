@@ -13,6 +13,7 @@ use App\Models\ProductAttributeValue;
 use App\Models\ProductVariant;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -409,9 +410,22 @@ class ProductController extends Controller
     public function destroy(string $id): JsonResponse
     {
         $product = Product::findOrFail($id);
-        $product->delete();
+        try {
+            $product->delete();
+            return response()->json(['message' => 'Produto removido.']);
+        } catch (QueryException $e) {
+            // Keep historical order integrity when product is referenced by past orders.
+            if ($e->getCode() === '23000') {
+                $product->update(['is_active' => false]);
 
-        return response()->json(['message' => 'Produto removido.']);
+                return response()->json([
+                    'message' => 'Produto com histórico de encomendas não pode ser eliminado. Foi desativado.',
+                    'archived' => true,
+                ]);
+            }
+
+            throw $e;
+        }
     }
 
     public function uploadImages(Request $request, string $product): JsonResponse

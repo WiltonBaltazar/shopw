@@ -1,22 +1,75 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
-import { Plus } from 'lucide-react'
+import { useEffect } from 'react'
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
+import { Plus, X } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import { Package } from 'lucide-react'
 import { getAdminProducts } from '~/lib/adminApi'
 import { formatPrice, cn } from '~/lib/utils'
 
+type ProductsSearch = {
+  toast?: string
+  toastType?: 'success' | 'info'
+}
+
 export const Route = createFileRoute('/admin/products/')({
+  validateSearch: (search): ProductsSearch => ({
+    toast: typeof search.toast === 'string' ? search.toast : undefined,
+    toastType:
+      search.toastType === 'success' || search.toastType === 'info'
+        ? search.toastType
+        : undefined,
+  }),
   component: ProductsPage,
 })
 
 function ProductsPage() {
+  const navigate = useNavigate()
+  const search = Route.useSearch()
   const { data: products, isLoading } = useQuery({
     queryKey: ['admin', 'products'],
     queryFn: getAdminProducts,
   })
 
+  useEffect(() => {
+    if (!search.toast) return
+    const timer = setTimeout(() => {
+      navigate({
+        to: '/admin/products',
+        search: (prev) => ({ ...prev, toast: undefined, toastType: undefined }),
+        replace: true,
+      })
+    }, 3500)
+
+    return () => clearTimeout(timer)
+  }, [search.toast, navigate])
+
   return (
     <div className="p-8 max-w-6xl">
+      {search.toast && (
+        <div
+          className={cn(
+            'mb-4 rounded-xl border px-4 py-3 text-sm flex items-start justify-between gap-3',
+            search.toastType === 'info'
+              ? 'bg-amber-50 border-amber-200 text-amber-800'
+              : 'bg-emerald-50 border-emerald-200 text-emerald-800',
+          )}
+        >
+          <p>{search.toast}</p>
+          <button
+            onClick={() =>
+              navigate({
+                to: '/admin/products',
+                search: (prev) => ({ ...prev, toast: undefined, toastType: undefined }),
+                replace: true,
+              })}
+            className="shrink-0 opacity-70 hover:opacity-100 transition-opacity"
+            aria-label="Fechar notificação"
+          >
+            <X size={16} />
+          </button>
+        </div>
+      )}
+
       <div className="flex items-start justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-stone-900 tracking-tight">Produtos</h1>
