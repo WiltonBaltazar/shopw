@@ -608,6 +608,12 @@ const LEGAL_PAGE_META = [
     path: '/termos-e-condicoes',
     hint: 'Conteúdo visível na página pública de termos e condições.',
   },
+  {
+    slug: 'politica-de-reembolso',
+    fallbackTitle: 'Política de Reembolso',
+    path: '/politica-de-reembolso',
+    hint: 'Conteúdo visível na página pública de devolução e reembolso.',
+  },
 ] as const
 
 function LegalPagesEditor({ pages, isLoading }: { pages: AdminPage[]; isLoading: boolean }) {

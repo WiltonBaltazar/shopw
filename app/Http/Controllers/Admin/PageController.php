@@ -47,4 +47,11 @@ class PageController extends Controller
 
         return response()->json(['data' => $page->fresh()]);
     }
+
+    public function destroy(Page $page): JsonResponse
+    {
+        $page->delete();
+
+        return response()->json(null, 204);
+    }
 }

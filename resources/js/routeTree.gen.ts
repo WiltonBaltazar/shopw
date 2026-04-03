@@ -18,6 +18,7 @@ import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
 import { Route as AdminReviewsRouteImport } from './routes/admin.reviews'
 import { Route as AdminReportsRouteImport } from './routes/admin.reports'
 import { Route as AdminProductsRouteImport } from './routes/admin.products'
+import { Route as AdminPagesRouteImport } from './routes/admin.pages'
 import { Route as AdminOrdersRouteImport } from './routes/admin.orders'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminDeliveryRouteImport } from './routes/admin.delivery'
@@ -27,6 +28,7 @@ import { Route as AdminBlogRouteImport } from './routes/admin.blog'
 import { Route as AdminBlockedDatesRouteImport } from './routes/admin.blocked-dates'
 import { Route as AdminAttributesRouteImport } from './routes/admin.attributes'
 import { Route as PublicTermosECondicoesRouteImport } from './routes/_public.termos-e-condicoes'
+import { Route as PublicPoliticaDeReembolsoRouteImport } from './routes/_public.politica-de-reembolso'
 import { Route as PublicPoliticaDePrivacidadeRouteImport } from './routes/_public.politica-de-privacidade'
 import { Route as PublicMinhasEncomendasRouteImport } from './routes/_public.minhas-encomendas'
 import { Route as PublicMenuRouteImport } from './routes/_public.menu'
@@ -89,6 +91,11 @@ const AdminProductsRoute = AdminProductsRouteImport.update({
   path: '/products',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminPagesRoute = AdminPagesRouteImport.update({
+  id: '/pages',
+  path: '/pages',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminOrdersRoute = AdminOrdersRouteImport.update({
   id: '/orders',
   path: '/orders',
@@ -134,6 +141,12 @@ const PublicTermosECondicoesRoute = PublicTermosECondicoesRouteImport.update({
   path: '/termos-e-condicoes',
   getParentRoute: () => PublicRoute,
 } as any)
+const PublicPoliticaDeReembolsoRoute =
+  PublicPoliticaDeReembolsoRouteImport.update({
+    id: '/politica-de-reembolso',
+    path: '/politica-de-reembolso',
+    getParentRoute: () => PublicRoute,
+  } as any)
 const PublicPoliticaDePrivacidadeRoute =
   PublicPoliticaDePrivacidadeRouteImport.update({
     id: '/politica-de-privacidade',
@@ -231,6 +244,7 @@ export interface FileRoutesByFullPath {
   '/menu': typeof PublicMenuRoute
   '/minhas-encomendas': typeof PublicMinhasEncomendasRoute
   '/politica-de-privacidade': typeof PublicPoliticaDePrivacidadeRoute
+  '/politica-de-reembolso': typeof PublicPoliticaDeReembolsoRoute
   '/termos-e-condicoes': typeof PublicTermosECondicoesRoute
   '/admin/attributes': typeof AdminAttributesRoute
   '/admin/blocked-dates': typeof AdminBlockedDatesRoute
@@ -240,6 +254,7 @@ export interface FileRoutesByFullPath {
   '/admin/delivery': typeof AdminDeliveryRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/orders': typeof AdminOrdersRouteWithChildren
+  '/admin/pages': typeof AdminPagesRoute
   '/admin/products': typeof AdminProductsRouteWithChildren
   '/admin/reports': typeof AdminReportsRoute
   '/admin/reviews': typeof AdminReviewsRoute
@@ -264,6 +279,7 @@ export interface FileRoutesByTo {
   '/menu': typeof PublicMenuRoute
   '/minhas-encomendas': typeof PublicMinhasEncomendasRoute
   '/politica-de-privacidade': typeof PublicPoliticaDePrivacidadeRoute
+  '/politica-de-reembolso': typeof PublicPoliticaDeReembolsoRoute
   '/termos-e-condicoes': typeof PublicTermosECondicoesRoute
   '/admin/attributes': typeof AdminAttributesRoute
   '/admin/blocked-dates': typeof AdminBlockedDatesRoute
@@ -272,6 +288,7 @@ export interface FileRoutesByTo {
   '/admin/coupons': typeof AdminCouponsRoute
   '/admin/delivery': typeof AdminDeliveryRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/pages': typeof AdminPagesRoute
   '/admin/reports': typeof AdminReportsRoute
   '/admin/reviews': typeof AdminReviewsRoute
   '/admin/settings': typeof AdminSettingsRoute
@@ -300,6 +317,7 @@ export interface FileRoutesById {
   '/_public/menu': typeof PublicMenuRoute
   '/_public/minhas-encomendas': typeof PublicMinhasEncomendasRoute
   '/_public/politica-de-privacidade': typeof PublicPoliticaDePrivacidadeRoute
+  '/_public/politica-de-reembolso': typeof PublicPoliticaDeReembolsoRoute
   '/_public/termos-e-condicoes': typeof PublicTermosECondicoesRoute
   '/admin/attributes': typeof AdminAttributesRoute
   '/admin/blocked-dates': typeof AdminBlockedDatesRoute
@@ -309,6 +327,7 @@ export interface FileRoutesById {
   '/admin/delivery': typeof AdminDeliveryRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/orders': typeof AdminOrdersRouteWithChildren
+  '/admin/pages': typeof AdminPagesRoute
   '/admin/products': typeof AdminProductsRouteWithChildren
   '/admin/reports': typeof AdminReportsRoute
   '/admin/reviews': typeof AdminReviewsRoute
@@ -339,6 +358,7 @@ export interface FileRouteTypes {
     | '/menu'
     | '/minhas-encomendas'
     | '/politica-de-privacidade'
+    | '/politica-de-reembolso'
     | '/termos-e-condicoes'
     | '/admin/attributes'
     | '/admin/blocked-dates'
@@ -348,6 +368,7 @@ export interface FileRouteTypes {
     | '/admin/delivery'
     | '/admin/login'
     | '/admin/orders'
+    | '/admin/pages'
     | '/admin/products'
     | '/admin/reports'
     | '/admin/reviews'
@@ -372,6 +393,7 @@ export interface FileRouteTypes {
     | '/menu'
     | '/minhas-encomendas'
     | '/politica-de-privacidade'
+    | '/politica-de-reembolso'
     | '/termos-e-condicoes'
     | '/admin/attributes'
     | '/admin/blocked-dates'
@@ -380,6 +402,7 @@ export interface FileRouteTypes {
     | '/admin/coupons'
     | '/admin/delivery'
     | '/admin/login'
+    | '/admin/pages'
     | '/admin/reports'
     | '/admin/reviews'
     | '/admin/settings'
@@ -407,6 +430,7 @@ export interface FileRouteTypes {
     | '/_public/menu'
     | '/_public/minhas-encomendas'
     | '/_public/politica-de-privacidade'
+    | '/_public/politica-de-reembolso'
     | '/_public/termos-e-condicoes'
     | '/admin/attributes'
     | '/admin/blocked-dates'
@@ -416,6 +440,7 @@ export interface FileRouteTypes {
     | '/admin/delivery'
     | '/admin/login'
     | '/admin/orders'
+    | '/admin/pages'
     | '/admin/products'
     | '/admin/reports'
     | '/admin/reviews'
@@ -506,6 +531,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminProductsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/pages': {
+      id: '/admin/pages'
+      path: '/pages'
+      fullPath: '/admin/pages'
+      preLoaderRoute: typeof AdminPagesRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/orders': {
       id: '/admin/orders'
       path: '/orders'
@@ -567,6 +599,13 @@ declare module '@tanstack/react-router' {
       path: '/termos-e-condicoes'
       fullPath: '/termos-e-condicoes'
       preLoaderRoute: typeof PublicTermosECondicoesRouteImport
+      parentRoute: typeof PublicRoute
+    }
+    '/_public/politica-de-reembolso': {
+      id: '/_public/politica-de-reembolso'
+      path: '/politica-de-reembolso'
+      fullPath: '/politica-de-reembolso'
+      preLoaderRoute: typeof PublicPoliticaDeReembolsoRouteImport
       parentRoute: typeof PublicRoute
     }
     '/_public/politica-de-privacidade': {
@@ -712,6 +751,7 @@ interface PublicRouteChildren {
   PublicMenuRoute: typeof PublicMenuRoute
   PublicMinhasEncomendasRoute: typeof PublicMinhasEncomendasRoute
   PublicPoliticaDePrivacidadeRoute: typeof PublicPoliticaDePrivacidadeRoute
+  PublicPoliticaDeReembolsoRoute: typeof PublicPoliticaDeReembolsoRoute
   PublicTermosECondicoesRoute: typeof PublicTermosECondicoesRoute
   PublicIndexRoute: typeof PublicIndexRoute
   PublicEncomendaReferenceRoute: typeof PublicEncomendaReferenceRoute
@@ -726,6 +766,7 @@ const PublicRouteChildren: PublicRouteChildren = {
   PublicMenuRoute: PublicMenuRoute,
   PublicMinhasEncomendasRoute: PublicMinhasEncomendasRoute,
   PublicPoliticaDePrivacidadeRoute: PublicPoliticaDePrivacidadeRoute,
+  PublicPoliticaDeReembolsoRoute: PublicPoliticaDeReembolsoRoute,
   PublicTermosECondicoesRoute: PublicTermosECondicoesRoute,
   PublicIndexRoute: PublicIndexRoute,
   PublicEncomendaReferenceRoute: PublicEncomendaReferenceRoute,
@@ -777,6 +818,7 @@ interface AdminRouteChildren {
   AdminDeliveryRoute: typeof AdminDeliveryRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminOrdersRoute: typeof AdminOrdersRouteWithChildren
+  AdminPagesRoute: typeof AdminPagesRoute
   AdminProductsRoute: typeof AdminProductsRouteWithChildren
   AdminReportsRoute: typeof AdminReportsRoute
   AdminReviewsRoute: typeof AdminReviewsRoute
@@ -794,6 +836,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminDeliveryRoute: AdminDeliveryRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminOrdersRoute: AdminOrdersRouteWithChildren,
+  AdminPagesRoute: AdminPagesRoute,
   AdminProductsRoute: AdminProductsRouteWithChildren,
   AdminReportsRoute: AdminReportsRoute,
   AdminReviewsRoute: AdminReviewsRoute,

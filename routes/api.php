@@ -188,6 +188,7 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::get('/pages', [\App\Http\Controllers\Admin\PageController::class, 'index']);
     Route::post('/pages', [\App\Http\Controllers\Admin\PageController::class, 'store']);
     Route::patch('/pages/{page}', [\App\Http\Controllers\Admin\PageController::class, 'update']);
+    Route::delete('/pages/{page}', [\App\Http\Controllers\Admin\PageController::class, 'destroy']);
 
     Route::get('/blog-posts', [\App\Http\Controllers\Admin\BlogPostController::class, 'index']);
     Route::post('/blog-posts', [\App\Http\Controllers\Admin\BlogPostController::class, 'store']);

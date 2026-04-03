@@ -77,6 +77,9 @@ export function Footer() {
               <Link to="/termos-e-condicoes" className="hover:text-white/80 transition-colors">
                 Termos e Condições
               </Link>
+              <Link to="/politica-de-reembolso" className="hover:text-white/80 transition-colors">
+                Política de Reembolso
+              </Link>
             </nav>
           </div>
         </div>

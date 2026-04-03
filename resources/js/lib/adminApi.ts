@@ -555,12 +555,22 @@ export interface AdminPage {
 export const getAdminPages = () =>
   api.get<{ data: AdminPage[] }>('/admin/pages').then((r) => r.data.data)
 
+export const createAdminPage = (data: {
+  title: string
+  slug?: string
+  content?: string | null
+  is_published?: boolean
+}) => api.post<{ data: AdminPage }>('/admin/pages', data).then((r) => r.data.data)
+
 export const updateAdminPage = (id: number, data: Partial<{
   title: string
   slug: string
   content: string | null
   is_published: boolean
 }>) => api.patch<{ data: AdminPage }>(`/admin/pages/${id}`, data).then((r) => r.data.data)
+
+export const deleteAdminPage = (id: number) =>
+  api.delete(`/admin/pages/${id}`)
 
 // ─── Blog Posts ───────────────────────────────────────────────────────────────
 
