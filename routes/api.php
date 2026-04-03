@@ -14,6 +14,7 @@ Route::get('/ping', function () {
 // Public coupon routes
 Route::post('/coupons/apply', [\App\Http\Controllers\CouponController::class, 'apply']);
 Route::get('/coupons/auto-apply', [\App\Http\Controllers\CouponController::class, 'autoApply']);
+Route::post('/customer/login', [\App\Http\Controllers\CustomerAuthController::class, 'login']);
 
 // Auth routes (Sanctum)
 Route::prefix('admin')->group(function () {
@@ -92,6 +93,11 @@ Route::post('/my-favorites', [\App\Http\Controllers\CustomerFavoriteController::
 Route::delete('/my-favorites/{id}', [\App\Http\Controllers\CustomerFavoriteController::class, 'destroy']);
 Route::post('/mpesa/callback', [\App\Http\Controllers\MpesaController::class, 'callback']);
 Route::get('/mpesa/verify/{reference}', [\App\Http\Controllers\MpesaController::class, 'verify']);
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/customer/me', [\App\Http\Controllers\CustomerAuthController::class, 'me']);
+    Route::post('/customer/logout', [\App\Http\Controllers\CustomerAuthController::class, 'logout']);
+});
 
 // Admin protected routes
 Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {

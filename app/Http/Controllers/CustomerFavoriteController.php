@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Customer;
 use App\Models\CustomerFavorite;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -10,11 +11,17 @@ class CustomerFavoriteController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        $request->validate([
-            'phone' => ['required', 'string', 'min:7', 'max:30'],
-        ]);
+        $customer = $request->user();
+        if ($customer instanceof Customer) {
+            $phone = $customer->phone;
+        } else {
+            $request->validate([
+                'phone' => ['required', 'string', 'min:7', 'max:30'],
+            ]);
+            $phone = (string) $request->input('phone');
+        }
 
-        $favorites = CustomerFavorite::where('phone', $request->phone)
+        $favorites = CustomerFavorite::where('phone', $phone)
             ->orderByDesc('created_at')
             ->get();
 
@@ -23,8 +30,9 @@ class CustomerFavoriteController extends Controller
 
     public function store(Request $request): JsonResponse
     {
-        $request->validate([
-            'phone'              => ['required', 'string', 'min:7', 'max:30'],
+        $customer = $request->user();
+
+        $rules = [
             'product_id'         => ['required', 'integer', 'exists:products,id'],
             'product_slug'       => ['required', 'string'],
             'product_name'       => ['required', 'string'],
@@ -35,36 +43,57 @@ class CustomerFavoriteController extends Controller
             'selected_values'    => ['present', 'array'],
             'flavour_selections' => ['present', 'array'],
             'addon_values'       => ['present', 'array'],
-        ]);
+        ];
+
+        if (! $customer instanceof Customer) {
+            $rules['phone'] = ['required', 'string', 'min:7', 'max:30'];
+        }
+
+        $data = $request->validate($rules);
+        $phone = $customer instanceof Customer ? $customer->phone : (string) $data['phone'];
 
         // Idempotent: return existing if same phone + product + variant already saved
-        $existing = CustomerFavorite::where('phone', $request->phone)
-            ->where('product_id', $request->product_id)
-            ->where('variant_id', $request->variant_id)
+        $existing = CustomerFavorite::where('phone', $phone)
+            ->where('product_id', $data['product_id'])
+            ->where('variant_id', $data['variant_id'])
             ->first();
 
         if ($existing) {
             return response()->json(['data' => $existing], 200);
         }
 
-        $favorite = CustomerFavorite::create($request->only([
-            'phone', 'product_id', 'product_slug', 'product_name', 'product_image',
-            'variant_id', 'variant_label', 'price',
-            'selected_values', 'flavour_selections', 'addon_values',
-        ]));
+        $favorite = CustomerFavorite::create([
+            'phone' => $phone,
+            'product_id' => $data['product_id'],
+            'product_slug' => $data['product_slug'],
+            'product_name' => $data['product_name'],
+            'product_image' => $data['product_image'] ?? null,
+            'variant_id' => $data['variant_id'],
+            'variant_label' => $data['variant_label'] ?? null,
+            'price' => $data['price'],
+            'selected_values' => $data['selected_values'],
+            'flavour_selections' => $data['flavour_selections'],
+            'addon_values' => $data['addon_values'],
+        ]);
 
         return response()->json(['data' => $favorite], 201);
     }
 
     public function destroy(Request $request, int $id): JsonResponse
     {
-        $request->validate([
-            'phone' => ['required', 'string'],
-        ]);
+        $customer = $request->user();
+        if ($customer instanceof Customer) {
+            $phone = $customer->phone;
+        } else {
+            $request->validate([
+                'phone' => ['required', 'string'],
+            ]);
+            $phone = (string) $request->input('phone');
+        }
 
         $favorite = CustomerFavorite::findOrFail($id);
 
-        if ($favorite->phone !== $request->phone) {
+        if ($favorite->phone !== $phone) {
             return response()->json(['message' => 'Não autorizado.'], 403);
         }
 

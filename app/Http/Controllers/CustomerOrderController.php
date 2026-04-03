@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Customer;
 use App\Models\Order;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -11,11 +12,15 @@ class CustomerOrderController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        $request->validate([
-            'phone' => ['required', 'string', 'min:7', 'max:30'],
-        ]);
-
-        $variants = $this->normalizePhone($request->phone);
+        $customer = $request->user();
+        if ($customer instanceof Customer) {
+            $variants = $this->normalizePhone($customer->phone);
+        } else {
+            $request->validate([
+                'phone' => ['required', 'string', 'min:7', 'max:30'],
+            ]);
+            $variants = $this->normalizePhone((string) $request->input('phone'));
+        }
 
         $orders = Order::where(function ($q) use ($variants) {
                 foreach ($variants as $v) {

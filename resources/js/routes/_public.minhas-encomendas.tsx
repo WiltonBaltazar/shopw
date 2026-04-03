@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { Helmet } from 'react-helmet-async'
 import { Heart, Phone, ChevronRight, ShoppingBag, Package } from 'lucide-react'
@@ -40,18 +40,27 @@ const STATUS_LABELS_PT: Record<string, string> = {
   cancelled: 'Cancelada',
 }
 
-function PhoneForm({ onSubmit }: { onSubmit: (phone: string) => void }) {
+function PhoneForm({ onSubmit }: { onSubmit: (phone: string) => Promise<void> }) {
   const [value, setValue] = useState('')
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     const digits = value.replace(/\D/g, '')
     if (digits.length < 9) {
       setError('Introduza um número válido (mínimo 9 dígitos).')
       return
     }
-    onSubmit(value.trim())
+    setLoading(true)
+    setError('')
+    try {
+      await onSubmit(value.trim())
+    } catch (err: any) {
+      setError(err?.response?.data?.message ?? 'Não foi possível iniciar sessão. Tente novamente.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -95,10 +104,11 @@ function PhoneForm({ onSubmit }: { onSubmit: (phone: string) => void }) {
           )}
           <button
             type="submit"
+            disabled={loading}
             className="w-full bg-stone-900 hover:bg-stone-800 active:bg-stone-950 text-white font-medium py-3.5 rounded-xl transition-colors text-sm flex items-center justify-center gap-2 group"
           >
-            Continuar
-            <ChevronRight size={16} className="transition-transform group-hover:translate-x-0.5" />
+            {loading ? 'A entrar...' : 'Entrar'}
+            {!loading && <ChevronRight size={16} className="transition-transform group-hover:translate-x-0.5" />}
           </button>
         </form>
 
@@ -228,10 +238,10 @@ function FavoriteCard({ favorite, phone }: { favorite: CustomerFavorite; phone: 
   )
 }
 
-function ProfileView({ phone }: { phone: string }) {
+function ProfileView({ phone, onLogout }: { phone: string; onLogout: () => Promise<void> }) {
   const { data: orders, isLoading: ordersLoading, isError: ordersError } = useMyOrders(phone)
   const { data: favorites, isLoading: favLoading, isError: favError } = useMyFavorites(phone)
-  const clearPhone = useCustomerStore((s) => s.clearPhone)
+  const [loggingOut, setLoggingOut] = useState(false)
   const [tab, setTab] = useState<'orders' | 'favorites'>('orders')
 
   const activeOrders = orders?.filter(o => !['delivered', 'cancelled'].includes(o.status)) ?? []
@@ -255,10 +265,18 @@ function ProfileView({ phone }: { phone: string }) {
           <p className="text-xs text-stone-400 mt-0.5 font-mono tracking-wider">{phone}</p>
         </div>
         <button
-          onClick={clearPhone}
+          onClick={async () => {
+            if (loggingOut) return
+            setLoggingOut(true)
+            try {
+              await onLogout()
+            } finally {
+              setLoggingOut(false)
+            }
+          }}
           className="text-xs text-stone-400 hover:text-stone-600 underline flex-shrink-0 transition-colors"
         >
-          Mudar
+          {loggingOut ? 'A sair...' : 'Sair'}
         </button>
       </div>
 
@@ -405,8 +423,56 @@ function ProfileView({ phone }: { phone: string }) {
 
 function MyOrdersPage() {
   const phone = useCustomerStore((s) => s.phone)
-  const setPhone = useCustomerStore((s) => s.setPhone)
+  const token = useCustomerStore((s) => s.token)
+  const setSession = useCustomerStore((s) => s.setSession)
+  const clearSession = useCustomerStore((s) => s.clearSession)
+  const [bootstrapping, setBootstrapping] = useState(false)
 
-  if (!phone) return <PhoneForm onSubmit={setPhone} />
-  return <ProfileView phone={phone} />
+  useEffect(() => {
+    if (!token || phone) return
+    let active = true
+    setBootstrapping(true)
+    api.get<{ data: { phone: string } }>('/customer/me')
+      .then(({ data }) => {
+        if (!active) return
+        setSession({ phone: data.data.phone, token })
+      })
+      .catch(() => {
+        if (!active) return
+        clearSession()
+      })
+      .finally(() => {
+        if (active) setBootstrapping(false)
+      })
+
+    return () => {
+      active = false
+    }
+  }, [token, phone, setSession, clearSession])
+
+  async function handleLogin(phoneInput: string) {
+    const { data } = await api.post<{ data: { phone: string; token: string } }>('/customer/login', { phone: phoneInput })
+    setSession({ phone: data.data.phone, token: data.data.token })
+  }
+
+  async function handleLogout() {
+    try {
+      await api.post('/customer/logout')
+    } catch {
+      // Ignore backend errors; local logout should still happen.
+    } finally {
+      clearSession()
+    }
+  }
+
+  if (bootstrapping) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center text-sm text-stone-500">
+        A carregar conta...
+      </div>
+    )
+  }
+
+  if (!phone) return <PhoneForm onSubmit={handleLogin} />
+  return <ProfileView phone={phone} onLogout={handleLogout} />
 }

@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { api } from './api'
 import type { Category, Product, ProductListItem, Order, OrderSummary, CustomerFavorite, PaymentInfo } from './types'
+import { useCustomerStore } from '~/store/customer'
 
 export interface SeoSettings {
   seo_site_name: string
@@ -127,13 +128,15 @@ export function useOrder(reference: string) {
 }
 
 export function useMyOrders(phone: string | null) {
+  const token = useCustomerStore((s) => s.token)
   return useQuery<OrderSummary[]>({
-    queryKey: ['my-orders', phone],
+    queryKey: ['my-orders', phone ?? 'session'],
     queryFn: async () => {
-      const { data } = await api.post('/my-orders', { phone })
+      const payload = phone ? { phone } : {}
+      const { data } = await api.post('/my-orders', payload)
       return data.data
     },
-    enabled: !!phone,
+    enabled: !!phone || !!token,
     staleTime: 30_000,
   })
 }
@@ -185,13 +188,15 @@ export function useTestimonials() {
 }
 
 export function useMyFavorites(phone: string | null) {
+  const token = useCustomerStore((s) => s.token)
   return useQuery<CustomerFavorite[]>({
-    queryKey: ['my-favorites', phone],
+    queryKey: ['my-favorites', phone ?? 'session'],
     queryFn: async () => {
-      const { data } = await api.post('/my-favorites/list', { phone })
+      const payload = phone ? { phone } : {}
+      const { data } = await api.post('/my-favorites/list', payload)
       return data.data
     },
-    enabled: !!phone,
+    enabled: !!phone || !!token,
     staleTime: 60_000,
   })
 }
