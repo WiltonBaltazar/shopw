@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -18,6 +17,13 @@ class StoreOrderRequest extends FormRequest
 
     public function rules(): array
     {
+        $payOnDeliveryRaw = \App\Models\Setting::get('pay_on_delivery_enabled', '0');
+        $payOnDeliveryEnabled = in_array(strtolower((string) $payOnDeliveryRaw), ['1', 'true', 'yes', 'on'], true);
+        $allowedPaymentMethods = ['mpesa'];
+        if ($payOnDeliveryEnabled) {
+            $allowedPaymentMethods[] = 'cash_on_delivery';
+        }
+
         return [
             'customer_name'    => ['required', 'string', 'max:255'],
             'customer_phone'   => ['required', 'string', 'max:30'],
@@ -42,6 +48,7 @@ class StoreOrderRequest extends FormRequest
             }],
             'delivery_type'    => ['nullable', Rule::in(['delivery', 'pickup'])],
             'delivery_region_id' => ['nullable', 'integer', 'exists:delivery_regions,id'],
+            'payment_method'   => ['nullable', 'string', Rule::in($allowedPaymentMethods)],
 
             'coupon_code'                 => ['nullable', 'string', 'max:64'],
 
@@ -67,6 +74,7 @@ class StoreOrderRequest extends FormRequest
             'delivery_region_id.exists'       => 'A região de entrega selecionada já não está disponível. Por favor, escolha outra.',
             'delivery_date.required'          => 'Escolha uma data e horário de entrega.',
             'delivery_date.after'             => 'As encomendas precisam de pelo menos 24 horas de antecedência.',
+            'payment_method.in'               => 'Método de pagamento inválido.',
         ];
     }
 }

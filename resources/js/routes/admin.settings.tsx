@@ -44,7 +44,7 @@ function SettingsPage() {
     )
   }
 
-  function set(key: keyof AppSettings, value: string) {
+  function set<K extends keyof AppSettings>(key: K, value: AppSettings[K]) {
     setForm((f) => ({ ...f, [key]: value }))
   }
 
@@ -112,6 +112,34 @@ function SettingsPage() {
               placeholder="258840000000"
               className="w-full border border-stone-200 rounded-xl px-3.5 py-2.5 text-sm text-stone-800 placeholder-stone-300 outline-none focus:border-primary-400"
             />
+          </div>
+        </section>
+
+        {/* Payment methods */}
+        <section className="bg-white rounded-2xl border border-stone-200 divide-y divide-stone-100">
+          <div className="px-6 py-4">
+            <h2 className="font-medium text-stone-800">Pagamentos</h2>
+            <p className="text-xs text-stone-400 mt-0.5">Ative ou desative métodos de pagamento no checkout.</p>
+          </div>
+          <div className="p-6">
+            <div className="flex items-center justify-between gap-4 border border-stone-200 rounded-xl px-4 py-3 bg-stone-50">
+              <div>
+                <p className="text-sm font-medium text-stone-800">Pagar na entrega</p>
+                <p className="text-xs text-stone-400 mt-0.5">Mostra a opção no checkout para cobrar offline na entrega.</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => set('pay_on_delivery_enabled', !(form.pay_on_delivery_enabled ?? false))}
+                className={`relative w-10 h-5 rounded-full transition-colors ${form.pay_on_delivery_enabled ? 'bg-primary-500' : 'bg-stone-300'}`}
+                aria-label="Ativar pagamento na entrega"
+              >
+                <span
+                  className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${
+                    form.pay_on_delivery_enabled ? 'translate-x-5' : 'translate-x-0.5'
+                  }`}
+                />
+              </button>
+            </div>
           </div>
         </section>
 

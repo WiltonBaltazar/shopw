@@ -29,8 +29,10 @@ Route::prefix('admin')->group(function () {
 // Public routes
 Route::get('/settings', function () {
     $s = \App\Models\Setting::class;
+    $payOnDeliveryRaw = $s::get('pay_on_delivery_enabled', '0');
     return response()->json(['data' => [
         'whatsapp_number'      => $s::get('whatsapp_number', '258840000000'),
+        'pay_on_delivery_enabled' => in_array(strtolower((string) $payOnDeliveryRaw), ['1', 'true', 'yes', 'on'], true),
         'seo_site_name'        => $s::get('seo_site_name', 'Cheesemania'),
         'seo_home_title'       => $s::get('seo_home_title', 'Cheesemania — Cheesecakes Artesanais em Maputo'),
         'seo_home_description' => $s::get('seo_home_description', 'Cheesecakes artesanais feitos com amor em Maputo, Moçambique. Encomende online e receba na sua porta. Opções sem lactose e fitness disponíveis.'),
@@ -141,6 +143,7 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::patch('/orders/{order}/notes', [\App\Http\Controllers\Admin\OrderController::class, 'updateNotes']);
     Route::patch('/orders/{order}/payment-due', [\App\Http\Controllers\Admin\OrderController::class, 'setPaymentDue']);
     Route::post('/orders/{order}/reset-payment', [\App\Http\Controllers\Admin\OrderController::class, 'resetPayment']);
+    Route::post('/orders/{order}/mark-paid-manual', [\App\Http\Controllers\Admin\OrderController::class, 'markPaidManual']);
 
     Route::get('/reviews', [\App\Http\Controllers\Admin\ReviewController::class, 'index']);
     Route::patch('/reviews/{review}', [\App\Http\Controllers\Admin\ReviewController::class, 'update']);

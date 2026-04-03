@@ -46,7 +46,18 @@ function buildWhatsAppMessage(order: Order): string {
   }
   if (order.delivery_date) lines.push(`*Data de entrega:* ${formatDeliveryDate(order.delivery_date)}`)
   if (order.delivery_fee && order.delivery_fee > 0) lines.push(`*Taxa de entrega:* ${formatPrice(order.delivery_fee)}`)
-  lines.push(`*Pagamento:* ${order.payment_status === 'paid' ? 'Pago via M-Pesa' : 'Pendente'}`)
+  if (order.payment_status === 'paid') {
+    const paidLabel = order.payment_method === 'manual'
+      ? 'Pago manualmente'
+      : order.payment_method === 'cash_on_delivery'
+      ? 'Pago na entrega'
+      : 'Pago via M-Pesa'
+    lines.push(`*Pagamento:* ${paidLabel}`)
+  } else if (order.payment_method === 'cash_on_delivery') {
+    lines.push(`*Pagamento:* Pagar na entrega`)
+  } else {
+    lines.push(`*Pagamento:* Pendente`)
+  }
   lines.push(``)
   lines.push(`*Itens:*`)
 
@@ -215,8 +226,20 @@ function OrderPage() {
 
   const isCancelled = order.status === 'cancelled'
   const isPaid = order.payment_status === 'paid'
-  const isPending = order.payment_status === 'pending' || order.payment_status === 'unpaid'
+  const isPending = order.payment_method === 'mpesa' && (order.payment_status === 'pending' || order.payment_status === 'unpaid')
+  const isPayOnDeliveryPending = order.payment_method === 'cash_on_delivery' && !isPaid && order.payment_status !== 'failed'
   const isFailed = order.payment_status === 'failed'
+  const paymentLabel = isPaid
+    ? order.payment_method === 'manual'
+      ? 'Pago manualmente'
+      : order.payment_method === 'cash_on_delivery'
+      ? 'Pago na entrega'
+      : 'Pago via M-Pesa'
+    : isFailed
+    ? 'Falhou'
+    : order.payment_method === 'cash_on_delivery'
+    ? 'Pagar na entrega'
+    : 'Pendente'
 
   return (
     <div className="max-w-lg mx-auto px-4 py-10 pb-16">
@@ -276,6 +299,21 @@ function OrderPage() {
             </button>
           </div>
           {retryError && <p className="text-xs text-red-600 mt-3 pl-7">{retryError}</p>}
+        </div>
+      )}
+
+      {/* Pay on delivery notice */}
+      {isPayOnDeliveryPending && (
+        <div className="bg-blue-50 border border-blue-100 rounded-2xl p-4 mb-6">
+          <div className="flex items-start gap-3">
+            <Truck size={18} className="text-blue-500 flex-shrink-0 mt-0.5" />
+            <div>
+              <p className="font-medium text-blue-800 text-sm">Pagamento na entrega</p>
+              <p className="text-xs text-blue-600 mt-0.5 leading-relaxed">
+                Esta encomenda será paga offline quando receber o pedido.
+              </p>
+            </div>
+          </div>
         </div>
       )}
 
@@ -371,7 +409,7 @@ function OrderPage() {
                 ? 'bg-red-50 text-red-700'
                 : 'bg-amber-50 text-amber-700'
             }`}>
-              {isPaid ? 'Pago via M-Pesa' : isFailed ? 'Falhou' : 'Pendente'}
+              {paymentLabel}
             </span>
           </div>
         </div>

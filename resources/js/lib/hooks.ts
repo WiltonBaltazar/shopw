@@ -18,6 +18,7 @@ export interface SeoSettings {
   hero_cta_text: string | null
   hero_image_url: string | null
   whatsapp_number: string | null
+  pay_on_delivery_enabled: boolean
   theme_primary_color?: string | null
 }
 
@@ -36,6 +37,7 @@ const SEO_DEFAULTS: SeoSettings = {
   hero_cta_text: 'Ver o Menu',
   hero_image_url: null,
   whatsapp_number: null,
+  pay_on_delivery_enabled: false,
 }
 
 export function useThemeColor(): string | null {

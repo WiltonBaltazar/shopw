@@ -266,6 +266,35 @@ class OrderController extends Controller
         return response()->json(['message' => 'Pagamento resetado. O cliente pode tentar novamente.']);
     }
 
+    public function markPaidManual(Order $order): JsonResponse
+    {
+        DB::transaction(function () use ($order) {
+            $updates = [
+                'payment_status' => 'paid',
+                'payment_method' => 'manual',
+                'amount_paid'    => $order->total,
+                'payment_due'    => null,
+                'payment_token'  => null,
+            ];
+
+            // Move newly-paid pending orders forward without forcing delivered/cancelled changes.
+            if ($order->status === 'pending') {
+                $updates['status'] = 'confirmed';
+            }
+
+            $order->update($updates);
+
+            if ($order->mpesaTransaction && $order->mpesaTransaction->status === 'pending') {
+                $order->mpesaTransaction->update(['status' => 'failed']);
+            }
+        });
+
+        return response()->json([
+            'message' => 'Pagamento marcado como pago manualmente.',
+            'data'    => new OrderResource($order->fresh()),
+        ]);
+    }
+
     public function updateStatus(Request $request, string $order): JsonResponse
     {
         $request->validate([

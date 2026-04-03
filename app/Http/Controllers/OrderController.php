@@ -22,41 +22,46 @@ class OrderController extends Controller
 {
     public function store(StoreOrderRequest $request): JsonResponse
     {
+        $paymentMethod = $request->input('payment_method', 'mpesa');
+
         // Guard: if this phone already has an unpaid order within 30 minutes,
         // check its M-Pesa transaction state before deciding whether to create a new order.
-        $existingOrder = Order::where('customer_phone', $request->customer_phone)
-            ->whereIn('payment_status', ['unpaid', 'pending'])
-            ->where('created_at', '>=', now()->subMinutes(30))
-            ->with('mpesaTransaction')
-            ->latest()
-            ->first();
+        if ($paymentMethod === 'mpesa') {
+            $existingOrder = Order::where('customer_phone', $request->customer_phone)
+                ->where('payment_method', 'mpesa')
+                ->whereIn('payment_status', ['unpaid', 'pending'])
+                ->where('created_at', '>=', now()->subMinutes(30))
+                ->with('mpesaTransaction')
+                ->latest()
+                ->first();
 
-        if ($existingOrder) {
-            $tx = $existingOrder->mpesaTransaction;
+            if ($existingOrder) {
+                $tx = $existingOrder->mpesaTransaction;
 
-            // Transaction is ambiguous (may have already charged) — redirect, don't retry
-            if ($tx && $tx->status === 'pending') {
-                Log::info('Duplicate order: pending M-Pesa transaction exists, redirecting.', [
+                // Transaction is ambiguous (may have already charged) — redirect, don't retry
+                if ($tx && $tx->status === 'pending') {
+                    Log::info('Duplicate order: pending M-Pesa transaction exists, redirecting.', [
+                        'reference' => $existingOrder->reference,
+                    ]);
+                    return response()->json([
+                        'message' => 'Já tem um pagamento em processamento. Confirme o PIN no telemóvel.',
+                        'data'    => [
+                            'reference'      => $existingOrder->reference,
+                            'total'          => (float) $existingOrder->total,
+                            'payment_status' => 'pending',
+                        ],
+                    ], 200);
+                }
+
+                // No transaction or previous transaction failed — retry M-Pesa on existing order
+                Log::info('Duplicate order: retrying M-Pesa on existing order.', [
                     'reference' => $existingOrder->reference,
                 ]);
-                return response()->json([
-                    'message' => 'Já tem um pagamento em processamento. Confirme o PIN no telemóvel.',
-                    'data'    => [
-                        'reference'      => $existingOrder->reference,
-                        'total'          => (float) $existingOrder->total,
-                        'payment_status' => 'pending',
-                    ],
-                ], 200);
+                return $this->initiatePayment($existingOrder);
             }
-
-            // No transaction or previous transaction failed — retry M-Pesa on existing order
-            Log::info('Duplicate order: retrying M-Pesa on existing order.', [
-                'reference' => $existingOrder->reference,
-            ]);
-            return $this->initiatePayment($existingOrder);
         }
 
-        $order = DB::transaction(function () use ($request) {
+        $order = DB::transaction(function () use ($request, $paymentMethod) {
             $itemsTotal = 0;
             $cartItems = [];
 
@@ -123,7 +128,7 @@ class OrderController extends Controller
                 'total'              => $total,
                 'status'             => 'pending',
                 'payment_status'     => 'unpaid',
-                'payment_method'     => 'mpesa',
+                'payment_method'     => $paymentMethod,
             ]);
 
             foreach ($request->items as $itemData) {
@@ -159,6 +164,18 @@ class OrderController extends Controller
 
             return $order;
         });
+
+        if ($paymentMethod === 'cash_on_delivery') {
+            return response()->json([
+                'message' => 'Encomenda criada com sucesso. O pagamento será feito na entrega.',
+                'data'    => [
+                    'reference'      => $order->reference,
+                    'total'          => (float) $order->total,
+                    'payment_status' => 'unpaid',
+                    'payment_method' => 'cash_on_delivery',
+                ],
+            ], 201);
+        }
 
         return $this->initiatePayment($order);
     }
@@ -286,6 +303,10 @@ class OrderController extends Controller
 
         if ($order->payment_status === 'paid') {
             return response()->json(['message' => 'Este pedido já foi pago.'], 422);
+        }
+
+        if ($order->payment_method !== 'mpesa') {
+            return response()->json(['message' => 'Este pedido está definido para pagamento manual/na entrega.'], 422);
         }
 
         // For event orders, validate the payment token before allowing payment.

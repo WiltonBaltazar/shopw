@@ -12,6 +12,7 @@ class SettingsController extends Controller
 {
     private const EDITABLE_KEYS = [
         'whatsapp_number',
+        'pay_on_delivery_enabled',
         'seo_site_name',
         'seo_home_title',
         'seo_home_description',
@@ -35,7 +36,12 @@ class SettingsController extends Controller
     {
         $settings = [];
         foreach (self::EDITABLE_KEYS as $key) {
-            $settings[$key] = Setting::get($key);
+            $value = Setting::get($key);
+            if ($key === 'pay_on_delivery_enabled') {
+                $settings[$key] = $this->toBool($value, false);
+                continue;
+            }
+            $settings[$key] = $value;
         }
 
         return response()->json(['data' => $settings]);
@@ -45,6 +51,7 @@ class SettingsController extends Controller
     {
         $data = $request->validate([
             'whatsapp_number'      => ['sometimes', 'nullable', 'string', 'max:20', 'regex:/^[0-9]*$/'],
+            'pay_on_delivery_enabled' => ['sometimes', 'boolean'],
             'seo_site_name'        => ['sometimes', 'nullable', 'string', 'max:100'],
             'seo_home_title'       => ['sometimes', 'nullable', 'string', 'max:120'],
             'seo_home_description' => ['sometimes', 'nullable', 'string', 'max:300'],
@@ -66,6 +73,10 @@ class SettingsController extends Controller
 
         foreach ($data as $key => $value) {
             if (in_array($key, self::EDITABLE_KEYS)) {
+                if ($key === 'pay_on_delivery_enabled') {
+                    Setting::set($key, $value ? '1' : '0');
+                    continue;
+                }
                 Setting::set($key, $value);
             }
         }
@@ -107,5 +118,30 @@ class SettingsController extends Controller
         Setting::set($key, $url);
 
         return response()->json(['url' => $url]);
+    }
+
+    private function toBool(mixed $value, bool $default = false): bool
+    {
+        if ($value === null || $value === '') {
+            return $default;
+        }
+
+        if (is_bool($value)) {
+            return $value;
+        }
+
+        if (is_numeric($value)) {
+            return (int) $value === 1;
+        }
+
+        $normalized = strtolower(trim((string) $value));
+        if (in_array($normalized, ['1', 'true', 'yes', 'on'], true)) {
+            return true;
+        }
+        if (in_array($normalized, ['0', 'false', 'no', 'off'], true)) {
+            return false;
+        }
+
+        return $default;
     }
 }

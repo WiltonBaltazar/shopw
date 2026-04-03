@@ -5,7 +5,7 @@ import { Helmet } from 'react-helmet-async'
 import { useQuery } from '@tanstack/react-query'
 import { ChevronLeft, ChevronRight, Tag, X, CheckCircle2, Loader2, Truck, Store, Clock } from 'lucide-react'
 import { useCartStore } from '~/store/cart'
-import { useBlockedDates, useBlockedWeekdays, useDeliveryHours } from '~/lib/hooks'
+import { useBlockedDates, useBlockedWeekdays, useDeliveryHours, useSeoSettings } from '~/lib/hooks'
 import { api } from '~/lib/api'
 import { formatPrice, cn } from '~/lib/utils'
 
@@ -66,6 +66,7 @@ interface FormState {
   delivery_time: string
   delivery_type: 'delivery' | 'pickup'
   delivery_region_id: string
+  payment_method: 'mpesa' | 'cash_on_delivery'
   notes: string
 }
 
@@ -157,6 +158,34 @@ function DeliveryTypeCard({
         <p className={cn('text-sm font-semibold', active ? 'text-primary-700' : 'text-stone-700')}>{title}</p>
         <p className="text-xs text-stone-400 mt-0.5">{subtitle}</p>
       </div>
+    </button>
+  )
+}
+
+function PaymentMethodCard({
+  active,
+  title,
+  subtitle,
+  onClick,
+}: {
+  active: boolean
+  title: string
+  subtitle: string
+  onClick: () => void
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        'flex-1 rounded-xl border-2 p-4 text-left transition-all',
+        active
+          ? 'border-primary-400 bg-primary-50'
+          : 'border-stone-200 bg-stone-50 hover:border-stone-300',
+      )}
+    >
+      <p className={cn('text-sm font-semibold', active ? 'text-primary-700' : 'text-stone-700')}>{title}</p>
+      <p className="text-xs text-stone-400 mt-0.5">{subtitle}</p>
     </button>
   )
 }
@@ -278,6 +307,8 @@ function CheckoutPage() {
   const blockedDates = useBlockedDates()
   const blockedWeekdays = useBlockedWeekdays()
   const { start: deliveryStart, end: deliveryEnd } = useDeliveryHours()
+  const seoSettings = useSeoSettings()
+  const payOnDeliveryEnabled = !!seoSettings.pay_on_delivery_enabled
 
   const [form, setForm] = useState<FormState>({
     customer_name: '',
@@ -287,6 +318,7 @@ function CheckoutPage() {
     delivery_time: '',
     delivery_type: 'delivery',
     delivery_region_id: '',
+    payment_method: 'mpesa',
     notes: '',
   })
   const [errors, setErrors] = useState<FormErrors>({})
@@ -311,6 +343,8 @@ function CheckoutPage() {
   const cartTotal = total()
   const discountAmount = appliedCoupon?.discount ?? 0
   const grandTotal = Math.max(0, cartTotal + deliveryFee - discountAmount)
+  const effectivePaymentMethod: FormState['payment_method'] = payOnDeliveryEnabled ? form.payment_method : 'mpesa'
+  const isMpesa = effectivePaymentMethod === 'mpesa'
 
   function set(field: keyof FormState, value: string) {
     setForm((f) => {
@@ -426,7 +460,7 @@ function CheckoutPage() {
         delivery_date: `${form.delivery_date} ${form.delivery_time}:00`,
         delivery_type: form.delivery_type,
         delivery_region_id: form.delivery_type === 'delivery' && form.delivery_region_id ? Number(form.delivery_region_id) : null,
-        payment_method: 'mpesa',
+        payment_method: effectivePaymentMethod,
         coupon_code: appliedCoupon?.code ?? null,
         items: items.map((item) => ({
           product_id: item.productId,
@@ -500,7 +534,7 @@ function CheckoutPage() {
                     placeholder="O seu nome"
                   />
                 </FloatInput>
-                <FloatInput label="Telefone MPesa *" error={errors.customer_phone}>
+                <FloatInput label="Telefone *" error={errors.customer_phone}>
                   <input
                     value={form.customer_phone}
                     onChange={(e) => set('customer_phone', e.target.value)}
@@ -579,8 +613,28 @@ function CheckoutPage() {
               />
             </Section>
 
-            {/* Section 4: Notes + Coupon */}
-            <Section number="4" title="Extras">
+            {/* Section 4: Payment */}
+            <Section number="4" title="Pagamento">
+              <div className="space-y-2">
+                <PaymentMethodCard
+                  active={effectivePaymentMethod === 'mpesa'}
+                  title="M-Pesa"
+                  subtitle="Recebe pedido no telemóvel para confirmar o pagamento"
+                  onClick={() => set('payment_method', 'mpesa')}
+                />
+                {payOnDeliveryEnabled && (
+                  <PaymentMethodCard
+                    active={effectivePaymentMethod === 'cash_on_delivery'}
+                    title="Pagar na entrega"
+                    subtitle="Pagamento offline quando receber a encomenda"
+                    onClick={() => set('payment_method', 'cash_on_delivery')}
+                  />
+                )}
+              </div>
+            </Section>
+
+            {/* Section 5: Notes + Coupon */}
+            <Section number="5" title="Extras">
               <FloatInput label="Notas adicionais" error={errors.notes}>
                 <textarea
                   value={form.notes}
@@ -611,9 +665,11 @@ function CheckoutPage() {
 
             {/* Desktop submit */}
             <div className="hidden md:block pt-1">
-              <SubmitButton submitting={submitting} grandTotal={grandTotal} />
+              <SubmitButton submitting={submitting} grandTotal={grandTotal} isMpesa={isMpesa} />
               <p className="text-xs text-stone-400 text-center mt-3">
-                Ao confirmar, será iniciado o pagamento por MPesa para o número introduzido.
+                {isMpesa
+                  ? 'Ao confirmar, será iniciado o pagamento por M-Pesa para o número introduzido.'
+                  : 'Ao confirmar, a encomenda será criada e o pagamento ficará para a entrega.'}
               </p>
             </div>
 
@@ -722,7 +778,7 @@ function CheckoutPage() {
             {submitting ? (
               <><Loader2 size={16} className="animate-spin" /> A processar...</>
             ) : (
-              'Confirmar e Pagar via MPesa'
+              isMpesa ? 'Confirmar e Pagar via M-Pesa' : 'Confirmar Encomenda'
             )}
           </button>
         </div>
@@ -733,7 +789,7 @@ function CheckoutPage() {
 
 // ── Submit button ──────────────────────────────────────────────────────────
 
-function SubmitButton({ submitting, grandTotal }: { submitting: boolean; grandTotal: number }) {
+function SubmitButton({ submitting, grandTotal, isMpesa }: { submitting: boolean; grandTotal: number; isMpesa: boolean }) {
   return (
     <button
       type="submit"
@@ -743,7 +799,7 @@ function SubmitButton({ submitting, grandTotal }: { submitting: boolean; grandTo
       {submitting ? (
         <><Loader2 size={16} className="animate-spin" /> A processar...</>
       ) : (
-        `Confirmar e Pagar · ${formatPrice(grandTotal)}`
+        isMpesa ? `Confirmar e Pagar · ${formatPrice(grandTotal)}` : `Confirmar Encomenda · ${formatPrice(grandTotal)}`
       )}
     </button>
   )

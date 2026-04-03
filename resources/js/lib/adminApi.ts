@@ -156,6 +156,9 @@ export const setPaymentDue = (id: number, payment_due: number) =>
 export const resetPayment = (id: number) =>
   api.post(`/admin/orders/${id}/reset-payment`).then((r) => r.data)
 
+export const markOrderPaidManual = (id: number) =>
+  api.post(`/admin/orders/${id}/mark-paid-manual`).then((r) => r.data)
+
 export const getLatestOrderId = () =>
   api.get<{ id: number }>('/admin/orders/latest-id').then((r) => r.data.id)
 
@@ -255,6 +258,7 @@ export const getAttributeSuggestions = () =>
 
 export interface AppSettings {
   whatsapp_number: string
+  pay_on_delivery_enabled: boolean
   seo_site_name: string
   seo_home_title: string
   seo_home_description: string

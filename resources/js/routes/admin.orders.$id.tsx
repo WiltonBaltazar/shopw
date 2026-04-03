@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { ChevronLeft, Loader2, User, Phone, MapPin, Calendar, FileText, Printer, Link2, Check } from 'lucide-react'
-import { getOrder, updateOrderStatus, updateOrderNotes, setPaymentDue, resetPayment } from '~/lib/adminApi'
+import { getOrder, updateOrderStatus, updateOrderNotes, setPaymentDue, resetPayment, markOrderPaidManual } from '~/lib/adminApi'
 import { formatPrice } from '~/lib/utils'
 import { StatusBadge, PaymentBadge } from '~/components/admin/Badges'
 
@@ -55,6 +55,14 @@ function OrderDetailPage() {
       queryClient.invalidateQueries({ queryKey: ['admin', 'orders', id] })
       setNotesSaved(true)
       setTimeout(() => setNotesSaved(false), 2000)
+    },
+  })
+
+  const markPaidMutation = useMutation({
+    mutationFn: () => markOrderPaidManual(Number(id)),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'orders'] })
+      queryClient.invalidateQueries({ queryKey: ['admin', 'orders', id] })
     },
   })
 
@@ -227,6 +235,16 @@ function OrderDetailPage() {
                     <span className="text-xs text-stone-400 uppercase">{order.payment_method}</span>
                   )}
                 </div>
+                {order.payment_status !== 'paid' && (
+                  <button
+                    onClick={() => markPaidMutation.mutate()}
+                    disabled={markPaidMutation.isPending}
+                    className="mt-3 w-full flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-medium py-2 rounded-xl transition-colors"
+                  >
+                    {markPaidMutation.isPending && <Loader2 size={14} className="animate-spin" />}
+                    Marcar como pago (manual)
+                  </button>
+                )}
               </div>
             </div>
 
