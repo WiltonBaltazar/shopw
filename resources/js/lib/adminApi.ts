@@ -267,6 +267,7 @@ export interface AppSettings {
   seo_og_image: string | null
   favicon_url: string | null
   brand_logo_url: string | null
+  footer_logo_url: string | null
   hero_tagline: string | null
   hero_heading: string | null
   hero_subheading: string | null
@@ -380,7 +381,7 @@ export const updateSettings = (data: Partial<AppSettings>) =>
 
 const multipartHeaders = { 'Content-Type': null as unknown as string }
 
-export const uploadSettingImage = (key: 'brand_logo_url' | 'seo_og_image' | 'hero_image_url' | 'favicon_url', file: File) => {
+export const uploadSettingImage = (key: 'brand_logo_url' | 'footer_logo_url' | 'seo_og_image' | 'hero_image_url' | 'favicon_url', file: File) => {
   const form = new FormData()
   form.append('image', file)
   form.append('key', key)
@@ -538,6 +539,28 @@ export const exportReportXlsx = async (start: string, end: string) => {
   a.click()
   URL.revokeObjectURL(url)
 }
+
+// ─── Pages ───────────────────────────────────────────────────────────────────
+
+export interface AdminPage {
+  id: number
+  title: string
+  slug: string
+  content: string | null
+  is_published: boolean
+  created_at: string
+  updated_at: string
+}
+
+export const getAdminPages = () =>
+  api.get<{ data: AdminPage[] }>('/admin/pages').then((r) => r.data.data)
+
+export const updateAdminPage = (id: number, data: Partial<{
+  title: string
+  slug: string
+  content: string | null
+  is_published: boolean
+}>) => api.patch<{ data: AdminPage }>(`/admin/pages/${id}`, data).then((r) => r.data.data)
 
 // ─── Blog Posts ───────────────────────────────────────────────────────────────
 

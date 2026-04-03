@@ -21,6 +21,7 @@ class SettingsController extends Controller
         'seo_og_image',
         'favicon_url',
         'brand_logo_url',
+        'footer_logo_url',
         'hero_tagline',
         'hero_heading',
         'hero_subheading',
@@ -60,6 +61,7 @@ class SettingsController extends Controller
             'seo_og_image'         => ['sometimes', 'nullable', 'string', 'max:500'],
             'favicon_url'          => ['sometimes', 'nullable', 'string', 'max:500'],
             'brand_logo_url'       => ['sometimes', 'nullable', 'string', 'max:500'],
+            'footer_logo_url'      => ['sometimes', 'nullable', 'string', 'max:500'],
             'hero_tagline'         => ['sometimes', 'nullable', 'string', 'max:200'],
             'hero_heading'         => ['sometimes', 'nullable', 'string', 'max:200'],
             'hero_subheading'      => ['sometimes', 'nullable', 'string', 'max:500'],
@@ -88,7 +90,7 @@ class SettingsController extends Controller
     {
         $request->validate([
             'image' => ['required', 'file', 'max:5120'],
-            'key'   => ['required', 'string', 'in:brand_logo_url,seo_og_image,hero_image_url,favicon_url'],
+            'key'   => ['required', 'string', 'in:brand_logo_url,footer_logo_url,seo_og_image,hero_image_url,favicon_url'],
         ]);
 
         $key = $request->input('key');

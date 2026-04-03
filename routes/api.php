@@ -41,6 +41,7 @@ Route::get('/settings', function () {
         'seo_og_image'         => $s::get('seo_og_image', ''),
         'favicon_url'          => $s::get('favicon_url', ''),
         'brand_logo_url'       => $s::get('brand_logo_url', null),
+        'footer_logo_url'      => $s::get('footer_logo_url', null),
         'hero_tagline'         => $s::get('hero_tagline', 'Homemade · Maputo'),
         'hero_heading'         => $s::get('hero_heading', "More Cheese,\nMore Joy"),
         'hero_subheading'      => $s::get('hero_subheading', 'Cheesecakes Homemade feitos com amor, prontos para a sua celebração especial.'),
@@ -71,6 +72,7 @@ Route::get('/delivery-regions', function () {
 Route::get('/categories', [\App\Http\Controllers\CategoryController::class, 'index']);
 Route::get('/products', [\App\Http\Controllers\ProductController::class, 'index']);
 Route::get('/products/{slug}', [\App\Http\Controllers\ProductController::class, 'show']);
+Route::get('/pages/{slug}', [\App\Http\Controllers\PageController::class, 'show']);
 Route::get('/blog-posts', [\App\Http\Controllers\BlogPostController::class, 'index']);
 Route::get('/blog-posts/{slug}', [\App\Http\Controllers\BlogPostController::class, 'show']);
 Route::get('/testimonials', function () {
@@ -182,6 +184,10 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
 
     Route::get('/reports', [\App\Http\Controllers\Admin\ReportsController::class, 'index']);
     Route::get('/reports/export', [\App\Http\Controllers\Admin\ReportsController::class, 'exportXlsx']);
+
+    Route::get('/pages', [\App\Http\Controllers\Admin\PageController::class, 'index']);
+    Route::post('/pages', [\App\Http\Controllers\Admin\PageController::class, 'store']);
+    Route::patch('/pages/{page}', [\App\Http\Controllers\Admin\PageController::class, 'update']);
 
     Route::get('/blog-posts', [\App\Http\Controllers\Admin\BlogPostController::class, 'index']);
     Route::post('/blog-posts', [\App\Http\Controllers\Admin\BlogPostController::class, 'store']);

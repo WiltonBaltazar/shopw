@@ -12,6 +12,7 @@ export interface SeoSettings {
   seo_og_image: string | null
   favicon_url: string | null
   brand_logo_url: string | null
+  footer_logo_url: string | null
   hero_tagline: string | null
   hero_heading: string | null
   hero_subheading: string | null
@@ -31,6 +32,7 @@ const SEO_DEFAULTS: SeoSettings = {
   seo_og_image: null,
   favicon_url: null,
   brand_logo_url: null,
+  footer_logo_url: null,
   hero_tagline: 'Homemade · Maputo',
   hero_heading: 'More Cheese,\nMore Joy',
   hero_subheading: 'Cheesecakes Homemade feitos com amor, prontos para a sua celebração especial.',
@@ -84,6 +86,26 @@ export function useDeliveryHours(): { start: number; end: number } {
     staleTime: 5 * 60 * 1000,
   })
   return data ?? { start: 10, end: 19 }
+}
+
+export interface PublicPage {
+  id: number
+  title: string
+  slug: string
+  content: string | null
+  updated_at: string
+}
+
+export function usePublicPage(slug: string) {
+  return useQuery<PublicPage>({
+    queryKey: ['public-page', slug],
+    queryFn: async () => {
+      const { data } = await api.get(`/pages/${slug}`)
+      return data.data
+    },
+    enabled: !!slug,
+    staleTime: 5 * 60 * 1000,
+  })
 }
 
 export function useCategories() {

@@ -1,8 +1,12 @@
 import { useState, useEffect, useRef } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Upload, X, Loader2 } from 'lucide-react'
-import { getSettings, updateSettings, uploadSettingImage, type AppSettings } from '~/lib/adminApi'
+import { Upload, X, Loader2, Bold, Italic, Underline as UnderlineIcon, List, ListOrdered, Heading2, Heading3, Quote, Save, Check } from 'lucide-react'
+import { useEditor, EditorContent } from '@tiptap/react'
+import StarterKit from '@tiptap/starter-kit'
+import Underline from '@tiptap/extension-underline'
+import Placeholder from '@tiptap/extension-placeholder'
+import { getSettings, updateSettings, uploadSettingImage, getAdminPages, updateAdminPage, type AppSettings, type AdminPage } from '~/lib/adminApi'
 import { generateColorScale } from '~/lib/colorScale'
 
 export const Route = createFileRoute('/admin/settings')({
@@ -14,6 +18,10 @@ function SettingsPage() {
   const { data: settings, isLoading } = useQuery({
     queryKey: ['admin', 'settings'],
     queryFn: getSettings,
+  })
+  const { data: pages = [], isLoading: isPagesLoading } = useQuery({
+    queryKey: ['admin', 'pages'],
+    queryFn: getAdminPages,
   })
 
   const [form, setForm] = useState<Partial<AppSettings>>({})
@@ -147,7 +155,7 @@ function SettingsPage() {
         <section className="bg-white rounded-2xl border border-stone-200 divide-y divide-stone-100">
           <div className="px-6 py-4">
             <h2 className="font-medium text-stone-800">Branding</h2>
-            <p className="text-xs text-stone-400 mt-0.5">Logótipo e textos da secção principal (hero) da página inicial.</p>
+            <p className="text-xs text-stone-400 mt-0.5">Logótipos e textos da secção principal (hero) da página inicial.</p>
           </div>
 
           <div className="p-6 space-y-5">
@@ -167,6 +175,24 @@ function SettingsPage() {
                   mutation.mutate({ brand_logo_url: '' })
                 }}
                 aspectHint="Recomendado: PNG transparente, altura ≥ 80px"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-stone-700 mb-1">Logótipo do Footer</label>
+              <p className="text-xs text-stone-400 mb-2">Opcional. Se não for definido, o footer usa o logótipo principal do menu/navbar.</p>
+              <ImageUploadField
+                value={form.footer_logo_url ?? null}
+                settingKey="footer_logo_url"
+                onUploaded={(url) => {
+                  set('footer_logo_url', url)
+                  queryClient.invalidateQueries({ queryKey: ['admin', 'settings'] })
+                  queryClient.invalidateQueries({ queryKey: ['public-settings'] })
+                }}
+                onRemove={() => {
+                  set('footer_logo_url', '')
+                  mutation.mutate({ footer_logo_url: '' })
+                }}
+                aspectHint="Recomendado: PNG transparente, altura ≥ 120px"
               />
             </div>
             <div>
@@ -318,6 +344,17 @@ function SettingsPage() {
           </div>
         </section>
 
+        {/* Páginas legais */}
+        <section className="bg-white rounded-2xl border border-stone-200 divide-y divide-stone-100">
+          <div className="px-6 py-4">
+            <h2 className="font-medium text-stone-800">Páginas legais</h2>
+            <p className="text-xs text-stone-400 mt-0.5">Geridas pelo novo modelo de páginas com editor WYSIWYG.</p>
+          </div>
+          <div className="p-6">
+            <LegalPagesEditor pages={pages} isLoading={isPagesLoading} />
+          </div>
+        </section>
+
         {/* Save bar */}
         <div className="flex items-center justify-between py-2">
           {saved && <span className="text-sm text-green-600 font-medium">Guardado com sucesso</span>}
@@ -347,7 +384,7 @@ function ImageUploadField({
   aspectHint,
 }: {
   value: string | null
-  settingKey: 'brand_logo_url' | 'seo_og_image' | 'hero_image_url' | 'favicon_url'
+  settingKey: 'brand_logo_url' | 'footer_logo_url' | 'seo_og_image' | 'hero_image_url' | 'favicon_url'
   onUploaded: (url: string) => void
   onRemove: () => void
   aspectHint?: string
@@ -554,6 +591,233 @@ function SeoField({
           {len} caracteres{warn && !over ? ' — um pouco longo' : over ? ' — demasiado longo' : ''}
         </p>
       )}
+    </div>
+  )
+}
+
+const LEGAL_PAGE_META = [
+  {
+    slug: 'politica-de-privacidade',
+    fallbackTitle: 'Política de Privacidade',
+    path: '/politica-de-privacidade',
+    hint: 'Conteúdo visível na página pública de privacidade.',
+  },
+  {
+    slug: 'termos-e-condicoes',
+    fallbackTitle: 'Termos e Condições',
+    path: '/termos-e-condicoes',
+    hint: 'Conteúdo visível na página pública de termos e condições.',
+  },
+] as const
+
+function LegalPagesEditor({ pages, isLoading }: { pages: AdminPage[]; isLoading: boolean }) {
+  const queryClient = useQueryClient()
+  const mutation = useMutation({
+    mutationFn: ({ id, data }: { id: number; data: Partial<{ title: string; content: string | null; is_published: boolean }> }) =>
+      updateAdminPage(id, data),
+    onSuccess: (page) => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'pages'] })
+      queryClient.invalidateQueries({ queryKey: ['public-page', page.slug] })
+    },
+  })
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        {Array.from({ length: 2 }).map((_, i) => (
+          <div key={i} className="border border-stone-200 rounded-2xl p-5 space-y-3">
+            <div className="h-4 w-44 rounded bg-stone-100 animate-pulse" />
+            <div className="h-10 rounded bg-stone-100 animate-pulse" />
+            <div className="h-48 rounded bg-stone-100 animate-pulse" />
+          </div>
+        ))}
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-6">
+      {LEGAL_PAGE_META.map((meta) => (
+        <LegalPageCard
+          key={meta.slug}
+          page={pages.find((p) => p.slug === meta.slug) ?? null}
+          fallbackTitle={meta.fallbackTitle}
+          path={meta.path}
+          hint={meta.hint}
+          isSaving={mutation.isPending && mutation.variables?.id === pages.find((p) => p.slug === meta.slug)?.id}
+          onSave={(id, data, onSaved) => mutation.mutate({ id, data }, { onSuccess: onSaved })}
+        />
+      ))}
+      {mutation.isError && (
+        <p className="text-sm text-red-600">Erro ao guardar a página legal. Tente novamente.</p>
+      )}
+    </div>
+  )
+}
+
+function LegalPageCard({
+  page,
+  fallbackTitle,
+  path,
+  hint,
+  isSaving,
+  onSave,
+}: {
+  page: AdminPage | null
+  fallbackTitle: string
+  path: string
+  hint: string
+  isSaving: boolean
+  onSave: (id: number, data: { title: string; content: string | null; is_published: boolean }, onSaved: () => void) => void
+}) {
+  const [title, setTitle] = useState(page?.title ?? fallbackTitle)
+  const [content, setContent] = useState(page?.content ?? '')
+  const [saved, setSaved] = useState(false)
+
+  useEffect(() => {
+    setTitle(page?.title ?? fallbackTitle)
+    setContent(page?.content ?? '')
+  }, [page?.id, page?.updated_at, page?.title, page?.content, fallbackTitle])
+
+  function handleSave() {
+    if (!page) return
+    setSaved(false)
+    onSave(
+      page.id,
+      {
+        title: title.trim() || fallbackTitle,
+        content: content.trim() || null,
+        is_published: true,
+      },
+      () => {
+        setSaved(true)
+        setTimeout(() => setSaved(false), 2200)
+      },
+    )
+  }
+
+  if (!page) {
+    return (
+      <div className="border border-amber-200 bg-amber-50 rounded-2xl p-5">
+        <p className="text-sm font-medium text-amber-800">{fallbackTitle}</p>
+        <p className="text-xs text-amber-700 mt-1">Página não encontrada no banco. Rode as migrações para criar o novo modelo de páginas.</p>
+      </div>
+    )
+  }
+
+  return (
+    <div className="rounded-2xl border border-stone-200 bg-gradient-to-b from-white to-stone-50/50 p-5 md:p-6 space-y-4">
+      <div>
+        <label className="block text-sm font-medium text-stone-700 mb-1">{fallbackTitle}</label>
+        <p className="text-xs text-stone-400">{hint} URL: <span className="font-mono">{path}</span></p>
+      </div>
+
+      <input
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        maxLength={255}
+        className="w-full border border-stone-200 rounded-xl px-3.5 py-2.5 text-sm text-stone-800 placeholder-stone-300 outline-none focus:border-primary-400"
+        placeholder={fallbackTitle}
+      />
+
+      <RichTextEditor
+        value={content}
+        onChange={setContent}
+        placeholder={`Escreva o conteúdo da página \"${fallbackTitle}\"...`}
+      />
+
+      <div className="flex items-center justify-between">
+        <p className="text-xs text-stone-400">{content.replace(/<[^>]*>/g, '').trim().length} caracteres (texto)</p>
+        <button
+          type="button"
+          onClick={handleSave}
+          disabled={isSaving}
+          className="inline-flex items-center gap-2 bg-primary-500 hover:bg-primary-600 disabled:bg-primary-300 text-white text-sm font-medium px-4 py-2 rounded-xl transition-colors"
+        >
+          {isSaving ? <Loader2 size={14} className="animate-spin" /> : saved ? <Check size={14} /> : <Save size={14} />}
+          {isSaving ? 'A guardar...' : saved ? 'Guardado' : 'Guardar página'}
+        </button>
+      </div>
+    </div>
+  )
+}
+
+function RichTextEditor({
+  value,
+  onChange,
+  placeholder,
+}: {
+  value: string
+  onChange: (html: string) => void
+  placeholder: string
+}) {
+  const editor = useEditor({
+    extensions: [
+      StarterKit,
+      Underline,
+      Placeholder.configure({ placeholder }),
+    ],
+    content: value || '',
+    onUpdate: ({ editor: currentEditor }) => onChange(currentEditor.getHTML()),
+    editorProps: {
+      attributes: {
+        class:
+          'min-h-[240px] px-3 py-2.5 text-sm text-stone-700 leading-relaxed focus:outline-none ' +
+          '[&_h2]:font-bold [&_h2]:text-base [&_h2]:mt-3 [&_h2]:mb-1 ' +
+          '[&_h3]:font-semibold [&_h3]:text-sm [&_h3]:mt-2 [&_h3]:mb-1 ' +
+          '[&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 ' +
+          '[&_li]:my-0.5 [&_blockquote]:border-l-4 [&_blockquote]:border-stone-200 ' +
+          '[&_blockquote]:pl-3 [&_blockquote]:italic [&_blockquote]:text-stone-500 ' +
+          '[&_strong]:font-semibold [&_em]:italic [&_.is-editor-empty:first-child]:before:content-[attr(data-placeholder)] ' +
+          '[&_.is-editor-empty:first-child]:before:text-stone-300 [&_.is-editor-empty:first-child]:before:pointer-events-none ' +
+          '[&_.is-editor-empty:first-child]:before:float-left [&_.is-editor-empty:first-child]:before:h-0',
+      },
+    },
+  })
+
+  useEffect(() => {
+    if (!editor) return
+    const incoming = value || ''
+    if (editor.getHTML() !== incoming) {
+      editor.commands.setContent(incoming, { emitUpdate: false })
+    }
+  }, [editor, value])
+
+  if (!editor) return null
+
+  const toolbarButton = (
+    active: boolean,
+    title: string,
+    onClick: () => void,
+    icon: React.ReactNode,
+  ) => (
+    <button
+      type="button"
+      title={title}
+      onClick={onClick}
+      className={`w-7 h-7 rounded flex items-center justify-center transition-colors ${
+        active ? 'bg-primary-100 text-primary-600' : 'text-stone-500 hover:bg-stone-100 hover:text-stone-700'
+      }`}
+    >
+      {icon}
+    </button>
+  )
+
+  return (
+    <div className="border border-stone-200 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-primary-300 focus-within:border-transparent bg-white">
+      <div className="flex items-center gap-0.5 px-2 py-1.5 border-b border-stone-100 bg-stone-50 flex-wrap">
+        {toolbarButton(editor.isActive('bold'), 'Negrito', () => editor.chain().focus().toggleBold().run(), <Bold size={13} />)}
+        {toolbarButton(editor.isActive('italic'), 'Itálico', () => editor.chain().focus().toggleItalic().run(), <Italic size={13} />)}
+        {toolbarButton(editor.isActive('underline'), 'Sublinhado', () => editor.chain().focus().toggleUnderline().run(), <UnderlineIcon size={13} />)}
+        <div className="w-px h-4 bg-stone-200 mx-1" />
+        {toolbarButton(editor.isActive('heading', { level: 2 }), 'Título 2', () => editor.chain().focus().toggleHeading({ level: 2 }).run(), <Heading2 size={14} />)}
+        {toolbarButton(editor.isActive('heading', { level: 3 }), 'Título 3', () => editor.chain().focus().toggleHeading({ level: 3 }).run(), <Heading3 size={14} />)}
+        <div className="w-px h-4 bg-stone-200 mx-1" />
+        {toolbarButton(editor.isActive('bulletList'), 'Lista', () => editor.chain().focus().toggleBulletList().run(), <List size={13} />)}
+        {toolbarButton(editor.isActive('orderedList'), 'Lista numerada', () => editor.chain().focus().toggleOrderedList().run(), <ListOrdered size={13} />)}
+        {toolbarButton(editor.isActive('blockquote'), 'Citação', () => editor.chain().focus().toggleBlockquote().run(), <Quote size={13} />)}
+      </div>
+      <EditorContent editor={editor} />
     </div>
   )
 }

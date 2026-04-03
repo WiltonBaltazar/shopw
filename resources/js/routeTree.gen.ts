@@ -26,6 +26,8 @@ import { Route as AdminCategoriesRouteImport } from './routes/admin.categories'
 import { Route as AdminBlogRouteImport } from './routes/admin.blog'
 import { Route as AdminBlockedDatesRouteImport } from './routes/admin.blocked-dates'
 import { Route as AdminAttributesRouteImport } from './routes/admin.attributes'
+import { Route as PublicTermosECondicoesRouteImport } from './routes/_public.termos-e-condicoes'
+import { Route as PublicPoliticaDePrivacidadeRouteImport } from './routes/_public.politica-de-privacidade'
 import { Route as PublicMinhasEncomendasRouteImport } from './routes/_public.minhas-encomendas'
 import { Route as PublicMenuRouteImport } from './routes/_public.menu'
 import { Route as PublicEncomendaEventoRouteImport } from './routes/_public.encomenda-evento'
@@ -127,6 +129,17 @@ const AdminAttributesRoute = AdminAttributesRouteImport.update({
   path: '/attributes',
   getParentRoute: () => AdminRoute,
 } as any)
+const PublicTermosECondicoesRoute = PublicTermosECondicoesRouteImport.update({
+  id: '/termos-e-condicoes',
+  path: '/termos-e-condicoes',
+  getParentRoute: () => PublicRoute,
+} as any)
+const PublicPoliticaDePrivacidadeRoute =
+  PublicPoliticaDePrivacidadeRouteImport.update({
+    id: '/politica-de-privacidade',
+    path: '/politica-de-privacidade',
+    getParentRoute: () => PublicRoute,
+  } as any)
 const PublicMinhasEncomendasRoute = PublicMinhasEncomendasRouteImport.update({
   id: '/minhas-encomendas',
   path: '/minhas-encomendas',
@@ -217,6 +230,8 @@ export interface FileRoutesByFullPath {
   '/encomenda-evento': typeof PublicEncomendaEventoRoute
   '/menu': typeof PublicMenuRoute
   '/minhas-encomendas': typeof PublicMinhasEncomendasRoute
+  '/politica-de-privacidade': typeof PublicPoliticaDePrivacidadeRoute
+  '/termos-e-condicoes': typeof PublicTermosECondicoesRoute
   '/admin/attributes': typeof AdminAttributesRoute
   '/admin/blocked-dates': typeof AdminBlockedDatesRoute
   '/admin/blog': typeof AdminBlogRoute
@@ -248,6 +263,8 @@ export interface FileRoutesByTo {
   '/encomenda-evento': typeof PublicEncomendaEventoRoute
   '/menu': typeof PublicMenuRoute
   '/minhas-encomendas': typeof PublicMinhasEncomendasRoute
+  '/politica-de-privacidade': typeof PublicPoliticaDePrivacidadeRoute
+  '/termos-e-condicoes': typeof PublicTermosECondicoesRoute
   '/admin/attributes': typeof AdminAttributesRoute
   '/admin/blocked-dates': typeof AdminBlockedDatesRoute
   '/admin/blog': typeof AdminBlogRoute
@@ -282,6 +299,8 @@ export interface FileRoutesById {
   '/_public/encomenda-evento': typeof PublicEncomendaEventoRoute
   '/_public/menu': typeof PublicMenuRoute
   '/_public/minhas-encomendas': typeof PublicMinhasEncomendasRoute
+  '/_public/politica-de-privacidade': typeof PublicPoliticaDePrivacidadeRoute
+  '/_public/termos-e-condicoes': typeof PublicTermosECondicoesRoute
   '/admin/attributes': typeof AdminAttributesRoute
   '/admin/blocked-dates': typeof AdminBlockedDatesRoute
   '/admin/blog': typeof AdminBlogRoute
@@ -319,6 +338,8 @@ export interface FileRouteTypes {
     | '/encomenda-evento'
     | '/menu'
     | '/minhas-encomendas'
+    | '/politica-de-privacidade'
+    | '/termos-e-condicoes'
     | '/admin/attributes'
     | '/admin/blocked-dates'
     | '/admin/blog'
@@ -350,6 +371,8 @@ export interface FileRouteTypes {
     | '/encomenda-evento'
     | '/menu'
     | '/minhas-encomendas'
+    | '/politica-de-privacidade'
+    | '/termos-e-condicoes'
     | '/admin/attributes'
     | '/admin/blocked-dates'
     | '/admin/blog'
@@ -383,6 +406,8 @@ export interface FileRouteTypes {
     | '/_public/encomenda-evento'
     | '/_public/menu'
     | '/_public/minhas-encomendas'
+    | '/_public/politica-de-privacidade'
+    | '/_public/termos-e-condicoes'
     | '/admin/attributes'
     | '/admin/blocked-dates'
     | '/admin/blog'
@@ -537,6 +562,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAttributesRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/_public/termos-e-condicoes': {
+      id: '/_public/termos-e-condicoes'
+      path: '/termos-e-condicoes'
+      fullPath: '/termos-e-condicoes'
+      preLoaderRoute: typeof PublicTermosECondicoesRouteImport
+      parentRoute: typeof PublicRoute
+    }
+    '/_public/politica-de-privacidade': {
+      id: '/_public/politica-de-privacidade'
+      path: '/politica-de-privacidade'
+      fullPath: '/politica-de-privacidade'
+      preLoaderRoute: typeof PublicPoliticaDePrivacidadeRouteImport
+      parentRoute: typeof PublicRoute
+    }
     '/_public/minhas-encomendas': {
       id: '/_public/minhas-encomendas'
       path: '/minhas-encomendas'
@@ -672,6 +711,8 @@ interface PublicRouteChildren {
   PublicEncomendaEventoRoute: typeof PublicEncomendaEventoRoute
   PublicMenuRoute: typeof PublicMenuRoute
   PublicMinhasEncomendasRoute: typeof PublicMinhasEncomendasRoute
+  PublicPoliticaDePrivacidadeRoute: typeof PublicPoliticaDePrivacidadeRoute
+  PublicTermosECondicoesRoute: typeof PublicTermosECondicoesRoute
   PublicIndexRoute: typeof PublicIndexRoute
   PublicEncomendaReferenceRoute: typeof PublicEncomendaReferenceRoute
   PublicPagarReferenceRoute: typeof PublicPagarReferenceRoute
@@ -684,6 +725,8 @@ const PublicRouteChildren: PublicRouteChildren = {
   PublicEncomendaEventoRoute: PublicEncomendaEventoRoute,
   PublicMenuRoute: PublicMenuRoute,
   PublicMinhasEncomendasRoute: PublicMinhasEncomendasRoute,
+  PublicPoliticaDePrivacidadeRoute: PublicPoliticaDePrivacidadeRoute,
+  PublicTermosECondicoesRoute: PublicTermosECondicoesRoute,
   PublicIndexRoute: PublicIndexRoute,
   PublicEncomendaReferenceRoute: PublicEncomendaReferenceRoute,
   PublicPagarReferenceRoute: PublicPagarReferenceRoute,
