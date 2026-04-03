@@ -19,6 +19,12 @@
     <meta property="og:image" content="{{ \App\Models\Setting::get('seo_og_image') }}" />
     @endif
 
+    @if(\App\Models\Setting::get('favicon_url'))
+    <link rel="icon" href="{{ \App\Models\Setting::get('favicon_url') }}" />
+    <link rel="shortcut icon" href="{{ \App\Models\Setting::get('favicon_url') }}" />
+    <link rel="apple-touch-icon" href="{{ \App\Models\Setting::get('favicon_url') }}" />
+    @endif
+
     {{-- LocalBusiness structured data --}}
     @php
     $phone = '+' . \App\Models\Setting::get('whatsapp_number', '258840000000');

@@ -371,7 +371,7 @@ function BlogPage() {
                 />
               </div>
 
-              <div className="flex items-center gap-8">
+              <div className="flex flex-wrap items-end gap-6">
                 <div>
                   <label className="block text-xs font-medium text-stone-600 mb-1.5">Ordem</label>
                   <input
@@ -382,12 +382,12 @@ function BlogPage() {
                     className="w-20 border border-stone-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-transparent"
                   />
                 </div>
-                <div className="flex items-center gap-2 mt-5">
+                <div className="flex items-center gap-2 pb-0.5">
                   <button
                     type="button"
                     onClick={() => setForm((f) => ({ ...f, is_published: !f.is_published }))}
                     className={cn(
-                      'w-9 h-5 rounded-full transition-colors relative',
+                      'w-9 min-w-9 h-5 shrink-0 rounded-full transition-colors relative',
                       form.is_published ? 'bg-primary-500' : 'bg-stone-200',
                     )}
                   >
@@ -400,12 +400,12 @@ function BlogPage() {
                   </button>
                   <span className="text-xs text-stone-600">Publicado</span>
                 </div>
-                <div className="flex items-center gap-2 mt-5">
+                <div className="flex items-center gap-2 pb-0.5">
                   <button
                     type="button"
                     onClick={() => setForm((f) => ({ ...f, is_sticky: !f.is_sticky }))}
                     className={cn(
-                      'w-9 h-5 rounded-full transition-colors relative',
+                      'w-9 min-w-9 h-5 shrink-0 rounded-full transition-colors relative',
                       form.is_sticky ? 'bg-amber-500' : 'bg-stone-200',
                     )}
                   >

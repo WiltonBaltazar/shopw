@@ -261,6 +261,7 @@ export interface AppSettings {
   seo_menu_title: string
   seo_menu_description: string
   seo_og_image: string | null
+  favicon_url: string | null
   brand_logo_url: string | null
   hero_tagline: string | null
   hero_heading: string | null
@@ -375,7 +376,7 @@ export const updateSettings = (data: Partial<AppSettings>) =>
 
 const multipartHeaders = { 'Content-Type': null as unknown as string }
 
-export const uploadSettingImage = (key: 'brand_logo_url' | 'seo_og_image', file: File) => {
+export const uploadSettingImage = (key: 'brand_logo_url' | 'seo_og_image' | 'hero_image_url' | 'favicon_url', file: File) => {
   const form = new FormData()
   form.append('image', file)
   form.append('key', key)

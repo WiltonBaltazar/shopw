@@ -142,6 +142,24 @@ function SettingsPage() {
               />
             </div>
             <div>
+              <label className="block text-sm font-medium text-stone-700 mb-1">Favicon</label>
+              <p className="text-xs text-stone-400 mb-2">Ícone do separador do browser. Recomendado: 32×32 ou 48×48 (PNG/ICO).</p>
+              <ImageUploadField
+                value={form.favicon_url ?? null}
+                settingKey="favicon_url"
+                onUploaded={(url) => {
+                  set('favicon_url', url)
+                  queryClient.invalidateQueries({ queryKey: ['admin', 'settings'] })
+                  queryClient.invalidateQueries({ queryKey: ['public-settings'] })
+                }}
+                onRemove={() => {
+                  set('favicon_url', '')
+                  mutation.mutate({ favicon_url: '' })
+                }}
+                aspectHint="32 × 32px ou 48 × 48px recomendado"
+              />
+            </div>
+            <div>
               <label className="block text-sm font-medium text-stone-700 mb-1">Imagem Hero</label>
               <p className="text-xs text-stone-400 mb-2">Imagem principal da página inicial. Se vazia, usa a OG Image como fallback. Recomendado: 800×600px ou superior.</p>
               <ImageUploadField
@@ -301,7 +319,7 @@ function ImageUploadField({
   aspectHint,
 }: {
   value: string | null
-  settingKey: 'brand_logo_url' | 'seo_og_image' | 'hero_image_url'
+  settingKey: 'brand_logo_url' | 'seo_og_image' | 'hero_image_url' | 'favicon_url'
   onUploaded: (url: string) => void
   onRemove: () => void
   aspectHint?: string
@@ -371,7 +389,7 @@ function ImageUploadField({
       <input
         ref={fileInputRef}
         type="file"
-        accept="image/*"
+        accept="image/*,.ico"
         className="hidden"
         onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f) }}
       />

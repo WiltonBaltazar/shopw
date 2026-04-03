@@ -36,6 +36,7 @@ Route::get('/settings', function () {
         'seo_menu_title'       => $s::get('seo_menu_title', 'Menu de Cheesecakes — Cheesemania Maputo'),
         'seo_menu_description' => $s::get('seo_menu_description', 'Explore o nosso menu de cheesecakes artesanais em Maputo. Sem lactose, fitness e sabores clássicos. Entrega ao domicílio em Maputo e Matola.'),
         'seo_og_image'         => $s::get('seo_og_image', ''),
+        'favicon_url'          => $s::get('favicon_url', ''),
         'brand_logo_url'       => $s::get('brand_logo_url', null),
         'hero_tagline'         => $s::get('hero_tagline', 'Artesanal · Maputo'),
         'hero_heading'         => $s::get('hero_heading', "More Cheese,\nMore Joy"),

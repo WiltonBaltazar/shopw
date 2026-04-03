@@ -1,8 +1,9 @@
 import { Outlet, createRootRouteWithContext } from '@tanstack/react-router'
 import type { QueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
+import { Helmet } from 'react-helmet-async'
 import '../../css/app.css'
-import { useThemeColor } from '~/lib/hooks'
+import { useSeoSettings } from '~/lib/hooks'
 import { generateColorScale } from '~/lib/colorScale'
 
 interface RouterContext {
@@ -14,7 +15,8 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 })
 
 function RootComponent() {
-  const themeColor = useThemeColor()
+  const seo = useSeoSettings()
+  const themeColor = seo.theme_primary_color
 
   useEffect(() => {
     if (!themeColor) return
@@ -25,5 +27,16 @@ function RootComponent() {
     })
   }, [themeColor])
 
-  return <Outlet />
+  return (
+    <>
+      {seo.favicon_url && (
+        <Helmet>
+          <link rel="icon" href={seo.favicon_url} />
+          <link rel="shortcut icon" href={seo.favicon_url} />
+          <link rel="apple-touch-icon" href={seo.favicon_url} />
+        </Helmet>
+      )}
+      <Outlet />
+    </>
+  )
 }

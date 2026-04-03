@@ -18,6 +18,7 @@ class SettingsController extends Controller
         'seo_menu_title',
         'seo_menu_description',
         'seo_og_image',
+        'favicon_url',
         'brand_logo_url',
         'hero_tagline',
         'hero_heading',
@@ -50,6 +51,7 @@ class SettingsController extends Controller
             'seo_menu_title'       => ['sometimes', 'nullable', 'string', 'max:120'],
             'seo_menu_description' => ['sometimes', 'nullable', 'string', 'max:300'],
             'seo_og_image'         => ['sometimes', 'nullable', 'string', 'max:500'],
+            'favicon_url'          => ['sometimes', 'nullable', 'string', 'max:500'],
             'brand_logo_url'       => ['sometimes', 'nullable', 'string', 'max:500'],
             'hero_tagline'         => ['sometimes', 'nullable', 'string', 'max:200'],
             'hero_heading'         => ['sometimes', 'nullable', 'string', 'max:200'],
@@ -74,11 +76,21 @@ class SettingsController extends Controller
     public function uploadImage(Request $request): JsonResponse
     {
         $request->validate([
-            'image' => ['required', 'image', 'max:5120'],
-            'key'   => ['required', 'string', 'in:brand_logo_url,seo_og_image,hero_image_url'],
+            'image' => ['required', 'file', 'max:5120'],
+            'key'   => ['required', 'string', 'in:brand_logo_url,seo_og_image,hero_image_url,favicon_url'],
         ]);
 
         $key = $request->input('key');
+
+        if ($key === 'favicon_url') {
+            $request->validate([
+                'image' => ['required', 'file', 'max:1024', 'mimes:ico,png,svg,webp,jpg,jpeg'],
+            ]);
+        } else {
+            $request->validate([
+                'image' => ['required', 'image', 'max:5120'],
+            ]);
+        }
 
         // Delete old file if it was one we uploaded (path starts with settings/)
         $old = Setting::get($key);

@@ -9,6 +9,7 @@ export interface SeoSettings {
   seo_menu_title: string
   seo_menu_description: string
   seo_og_image: string | null
+  favicon_url: string | null
   brand_logo_url: string | null
   hero_tagline: string | null
   hero_heading: string | null
@@ -26,6 +27,7 @@ const SEO_DEFAULTS: SeoSettings = {
   seo_menu_title: 'Menu de Cheesecakes — Cheesemania Maputo',
   seo_menu_description: 'Explore o nosso menu de cheesecakes artesanais em Maputo. Sem lactose, fitness e sabores clássicos. Entrega ao domicílio em Maputo e Matola.',
   seo_og_image: null,
+  favicon_url: null,
   brand_logo_url: null,
   hero_tagline: 'Artesanal · Maputo',
   hero_heading: 'More Cheese,\nMore Joy',
