@@ -53,7 +53,7 @@ class TestimonialSeeder extends Seeder
             [
                 'author_name'   => 'Miguel A.',
                 'author_detail' => 'Matola',
-                'quote'         => 'Qualidade artesanal que se nota logo no primeiro garfada. Presenteei a minha mãe e ela adorou.',
+                'quote'         => 'Qualidade Homemade que se nota logo no primeiro garfada. Presenteei a minha mãe e ela adorou.',
                 'rating'        => 5,
                 'is_active'     => true,
                 'sort_order'    => 6,

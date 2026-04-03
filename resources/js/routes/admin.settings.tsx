@@ -207,7 +207,7 @@ function SettingsPage() {
             </div>
             <SeoField
               label="Tagline (Hero)"
-              hint="Texto pequeno acima do título principal. Ex: Artesanal · Maputo"
+              hint="Texto pequeno acima do título principal. Ex: Homemade · Maputo"
               value={form.hero_tagline ?? ''}
               onChange={(v) => set('hero_tagline', v)}
               maxLength={200}

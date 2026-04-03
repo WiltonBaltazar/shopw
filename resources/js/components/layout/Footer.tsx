@@ -11,7 +11,7 @@ export function Footer() {
         <div>
           <p className="font-serif font-semibold text-white text-lg mb-2">Cheesemania</p>
           <p className="text-sm leading-relaxed">
-            Cheesecakes artesanais feitos com amor em Maputo, Moçambique.
+            Cheesecakes Homemade feitos com amor em Maputo, Moçambique.
           </p>
         </div>
 

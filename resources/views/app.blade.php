@@ -6,15 +6,15 @@
     <meta name="csrf-token" content="{{ csrf_token() }}" />
 
     {{-- Default title & description (overridden per-page by react-helmet-async) --}}
-    <title>{{ \App\Models\Setting::get('seo_home_title', 'Cheesemania — Cheesecakes Artesanais em Maputo') }}</title>
-    <meta name="description" content="{{ \App\Models\Setting::get('seo_home_description', 'Cheesecakes artesanais feitos com amor em Maputo, Moçambique. Encomende online e receba na sua porta.') }}" />
+    <title>{{ \App\Models\Setting::get('seo_home_title', 'Cheesemania — Cheesecakes Homemade em Maputo') }}</title>
+    <meta name="description" content="{{ \App\Models\Setting::get('seo_home_description', 'Cheesecakes Homemade feitos com amor em Maputo, Moçambique. Encomende online e receba na sua porta.') }}" />
 
     {{-- Default Open Graph (overridden per-page by react-helmet-async) --}}
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="{{ \App\Models\Setting::get('seo_site_name', 'Cheesemania') }}" />
     <meta property="og:locale" content="pt_MZ" />
-    <meta property="og:title" content="{{ \App\Models\Setting::get('seo_home_title', 'Cheesemania — Cheesecakes Artesanais em Maputo') }}" />
-    <meta property="og:description" content="{{ \App\Models\Setting::get('seo_home_description', 'Cheesecakes artesanais feitos com amor em Maputo, Moçambique.') }}" />
+    <meta property="og:title" content="{{ \App\Models\Setting::get('seo_home_title', 'Cheesemania — Cheesecakes Homemade em Maputo') }}" />
+    <meta property="og:description" content="{{ \App\Models\Setting::get('seo_home_description', 'Cheesecakes Homemade feitos com amor em Maputo, Moçambique.') }}" />
     @if(\App\Models\Setting::get('seo_og_image'))
     <meta property="og:image" content="{{ \App\Models\Setting::get('seo_og_image') }}" />
     @endif
@@ -33,7 +33,7 @@
         '@context'           => 'https://schema.org',
         '@type'              => ['Bakery', 'FoodEstablishment'],
         'name'               => \App\Models\Setting::get('seo_site_name', 'Cheesemania'),
-        'description'        => 'Cheesecakes artesanais feitos à mão em Maputo, Moçambique. Entrega ao domicílio em Maputo e Matola.',
+        'description'        => 'Cheesecakes Homemade feitos à mão em Maputo, Moçambique. Entrega ao domicílio em Maputo e Matola.',
         'url'                => $siteUrl,
         'telephone'          => $phone,
         'address'            => [
@@ -51,7 +51,7 @@
             ['@type' => 'City', 'name' => 'Maputo'],
             ['@type' => 'City', 'name' => 'Matola'],
         ],
-        'servesCuisine'      => ['Cheesecake', 'Pastelaria Artesanal'],
+        'servesCuisine'      => ['Cheesecake', 'Pastelaria Homemade'],
         'priceRange'         => '$$',
         'paymentAccepted'    => 'M-Pesa, Cash',
         'currenciesAccepted' => 'MZN',
@@ -78,7 +78,7 @@
             [
                 '@type'          => 'Question',
                 'name'           => 'Fazem entrega de cheesecake em Maputo?',
-                'acceptedAnswer' => ['@type' => 'Answer', 'text' => 'Sim, entregamos cheesecakes artesanais em toda a cidade de Maputo e Matola. As encomendas devem ser feitas com pelo menos 24 horas de antecedência.'],
+                'acceptedAnswer' => ['@type' => 'Answer', 'text' => 'Sim, entregamos cheesecakes Homemade em toda a cidade de Maputo e Matola. As encomendas devem ser feitas com pelo menos 24 horas de antecedência.'],
             ],
             [
                 '@type'          => 'Question',
@@ -111,7 +111,7 @@
 <body>
     <div id="root"></div>
     <noscript>
-        <p>Cheesemania — Cheesecakes artesanais feitos com amor em Maputo, Moçambique.
+        <p>Cheesemania — Cheesecakes Homemade feitos com amor em Maputo, Moçambique.
         Encomende online em <a href="{{ config('app.url') }}">{{ config('app.url') }}</a>.</p>
     </noscript>
 </body>

@@ -22,9 +22,9 @@ This document describes all planned SEO changes for the Cheesemania storefront. 
 **Titles:**
 | Page | Title | Description |
 |---|---|---|
-| Homepage | `Cheesemania — Cheesecakes Artesanais em Maputo` | `Cheesecakes artesanais feitos com amor em Maputo, Moçambique. Encomende online e receba na sua porta. Opções sem lactose e fitness disponíveis.` |
-| Menu | `Menu de Cheesecakes — Cheesemania Maputo` | `Explore o nosso menu de cheesecakes artesanais em Maputo. Sem lactose, fitness e sabores clássicos. Entrega ao domicílio em Maputo e Matola.` |
-| Product | `{product.name} — Cheesemania Maputo` | `{product.name} artesanal feito em Maputo. {product.description?.slice(0,120)}` |
+| Homepage | `Cheesemania — Cheesecakes Homemade em Maputo` | `Cheesecakes Homemade feitos com amor em Maputo, Moçambique. Encomende online e receba na sua porta. Opções sem lactose e fitness disponíveis.` |
+| Menu | `Menu de Cheesecakes — Cheesemania Maputo` | `Explore o nosso menu de cheesecakes Homemade em Maputo. Sem lactose, fitness e sabores clássicos. Entrega ao domicílio em Maputo e Matola.` |
+| Product | `{product.name} — Cheesemania Maputo` | `{product.name} Homemade feito em Maputo. {product.description?.slice(0,120)}` |
 | Checkout | `Finalizar Encomenda — Cheesemania` | *(noindex — no crawl value)* |
 | Order confirmation | `Encomenda #{reference} — Cheesemania` | *(noindex — no crawl value)* |
 
@@ -75,7 +75,7 @@ Sitemap: https://cheesemania.co.mz/sitemap.xml
   "@context": "https://schema.org",
   "@type": "Bakery",
   "name": "Cheesemania",
-  "description": "Cheesecakes artesanais em Maputo, Moçambique",
+  "description": "Cheesecakes Homemade em Maputo, Moçambique",
   "url": "https://cheesemania.co.mz",
   "telephone": "+258840000000",
   "address": {
@@ -130,8 +130,8 @@ Injected via `react-helmet-async` `<Helmet>` once product data is loaded. No sch
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="Cheesemania" />
 <meta property="og:locale" content="pt_MZ" />
-<meta property="og:title" content="Cheesemania — Cheesecakes Artesanais em Maputo" />
-<meta property="og:description" content="Cheesecakes artesanais feitos com amor em Maputo, Moçambique." />
+<meta property="og:title" content="Cheesemania — Cheesecakes Homemade em Maputo" />
+<meta property="og:description" content="Cheesecakes Homemade feitos com amor em Maputo, Moçambique." />
 <meta property="og:image" content="https://cheesemania.co.mz/og-default.jpg" />
 ```
 

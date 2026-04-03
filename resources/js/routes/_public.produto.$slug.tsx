@@ -310,7 +310,7 @@ function ProductPage() {
 
   const productTitle = product.seo_title ?? `${product.name} — ${seo.seo_site_name}`
   const productDescription = product.seo_description
-    ?? (product.description ? product.description.slice(0, 155) : `${product.name} artesanal feito em Maputo. Encomende online com entrega ao domicílio.`)
+    ?? (product.description ? product.description.slice(0, 155) : `${product.name} Homemade feito em Maputo. Encomende online com entrega ao domicílio.`)
   const productImage = product.primary_image?.url ?? seo.seo_og_image ?? ''
   const productUrl = `${window.location.origin}/produto/${product.slug}`
 

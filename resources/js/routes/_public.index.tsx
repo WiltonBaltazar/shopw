@@ -12,7 +12,7 @@ export const Route = createFileRoute('/_public/')({
 const FAQS = [
   {
     q: 'Fazem entrega de cheesecake em Maputo?',
-    a: 'Sim, entregamos cheesecakes artesanais em toda a cidade de Maputo e Matola. As encomendas devem ser feitas com pelo menos 24 horas de antecedência.',
+    a: 'Sim, entregamos cheesecakes Homemade em toda a cidade de Maputo e Matola. As encomendas devem ser feitas com pelo menos 24 horas de antecedência.',
   },
   {
     q: 'Como encomendar cheesecake em Maputo?',
@@ -296,7 +296,7 @@ function HomePage() {
           {/* ── Text block ── */}
           <div className="order-2 md:order-1 flex-1 px-5 pt-8 pb-10 md:px-0 md:py-0">
             <p className="h-fade-up h-d1 text-primary-500 text-[11px] font-bold tracking-[0.22em] uppercase mb-4">
-              {seo.hero_tagline ?? 'Artesanal · Maputo'}
+              {seo.hero_tagline ?? 'Homemade · Maputo'}
             </p>
 
             <h1
@@ -312,7 +312,7 @@ function HomePage() {
 
             <p className="h-fade-up h-d3 mt-5 text-stone-500 text-[15px] leading-relaxed max-w-sm">
               {seo.hero_subheading ??
-                'Cheesecakes artesanais feitos com amor, prontos para a sua celebração especial.'}
+                'Cheesecakes Homemade feitos com amor, prontos para a sua celebração especial.'}
             </p>
 
             <div className="h-fade-up h-d4 mt-7">
@@ -405,7 +405,7 @@ function HomePage() {
             '✦ Opção sem lactose',
             '✦ Opção fitness',
             '✦ Entrega ao domicílio',
-            '✦ 100% artesanal',
+            '✦ 100% Homemade',
             '✦ Feito com amor',
             '✦ Feito à mão',
             '✦ Sem conservantes',
@@ -413,7 +413,7 @@ function HomePage() {
             '✦ Opção sem lactose',
             '✦ Opção fitness',
             '✦ Entrega ao domicílio',
-            '✦ 100% artesanal',
+            '✦ 100% Homemade',
             '✦ Feito com amor',
           ].map((badge, i) => (
             <span

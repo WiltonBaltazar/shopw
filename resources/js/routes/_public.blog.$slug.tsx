@@ -102,7 +102,7 @@ function BlogPostPage() {
         />
 
         <div className="mt-12 pt-8 border-t border-stone-100 text-center">
-          <p className="text-stone-500 text-sm mb-4">Gostou? Explore os nossos cheesecakes artesanais.</p>
+          <p className="text-stone-500 text-sm mb-4">Gostou? Explore os nossos cheesecakes Homemade.</p>
           <Link
             to="/menu"
             className="inline-flex items-center gap-2 bg-primary-500 hover:bg-primary-600 active:scale-[0.97] text-white font-semibold px-6 py-3 rounded-full transition-all text-sm shadow-lg"

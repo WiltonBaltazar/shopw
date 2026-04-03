@@ -207,10 +207,10 @@ Add to `PublicLayout.tsx` above `<StickyCartBar />`:
 
 ## Hero Copy Alternatives
 
-**Tagline** (currently: *Artesanal · Maputo*)
+**Tagline** (currently: *Homemade · Maputo*)
 - `Maputo's favourite cheesecake`
 - `Feito em Maputo, entregue à sua porta`
-- `Artesanal · Sem conservantes · Maputo`
+- `Homemade · Sem conservantes · Maputo`
 
 **Subheading** (currently: generic "made with love")
 - `Cheesecakes feitos à encomenda, entregues frescos em Maputo e Matola. Com ou sem lactose.`

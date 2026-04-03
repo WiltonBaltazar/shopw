@@ -21,12 +21,12 @@ function BlogListPage() {
         <title>Blog — Cheesemania Maputo</title>
         <meta
           name="description"
-          content="Dicas, receitas e inspiração sobre cheesecakes artesanais em Maputo. Descubra tudo sobre os nossos produtos e celebrações especiais."
+          content="Dicas, receitas e inspiração sobre cheesecakes Homemade em Maputo. Descubra tudo sobre os nossos produtos e celebrações especiais."
         />
         <meta property="og:title" content="Blog — Cheesemania Maputo" />
         <meta
           property="og:description"
-          content="Dicas, receitas e inspiração sobre cheesecakes artesanais em Maputo."
+          content="Dicas, receitas e inspiração sobre cheesecakes Homemade em Maputo."
         />
       </Helmet>
 
@@ -36,7 +36,7 @@ function BlogListPage() {
             Blog
           </h1>
           <p className="text-stone-500 text-sm mt-2">
-            Dicas, receitas e inspiração sobre cheesecakes artesanais em Maputo.
+            Dicas, receitas e inspiração sobre cheesecakes Homemade em Maputo.
           </p>
         </div>
 

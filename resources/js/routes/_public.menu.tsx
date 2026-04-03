@@ -34,7 +34,7 @@ function MenuPage() {
           <h1 className="font-serif text-4xl md:text-5xl font-semibold text-stone-900 leading-none">
             Menu
           </h1>
-          <span className="font-serif text-lg md:text-xl text-stone-400 italic">artesanal</span>
+          <span className="font-serif text-lg md:text-xl text-stone-400 italic">Homemade</span>
         </div>
         <p className="text-stone-500 text-sm mt-2">
           Todos os cheesecakes disponíveis para encomenda.
