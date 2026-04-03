@@ -1,6 +1,10 @@
 import { Link } from '@tanstack/react-router'
+import { useSeoSettings } from '~/lib/hooks'
 
 export function Footer() {
+
+     const seo = useSeoSettings()
+    const whatsapp = seo.whatsapp_number
   return (
     <footer className="bg-stone-900 text-stone-400 mt-20">
       <div className="max-w-6xl mx-auto px-4 py-12 grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -24,7 +28,7 @@ export function Footer() {
           <ul className="space-y-2 text-sm">
             <li>
               <a
-                href="https://wa.me/258840000000"
+                 href={`https://wa.me/${whatsapp}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:text-white transition-colors"

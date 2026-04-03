@@ -135,7 +135,7 @@ function TestimonialsSection() {
 
 function TestimonialCard({ testimonial }: { testimonial: { author_name: string; author_detail: string | null; quote: string; rating: number } }) {
   return (
-    <div className="flex-shrink-0 w-[80vw] max-w-[300px] snap-start md:w-auto md:max-w-none bg-white rounded-2xl p-5 border border-stone-100 shadow-sm">
+    <div className="flex-shrink-0 w-full max-w-none snap-start md:w-auto md:max-w-none bg-white rounded-2xl p-5 border border-stone-100 shadow-sm">
       <div className="flex gap-0.5 mb-3">
         {Array.from({ length: 5 }).map((_, i) => (
           <Star
@@ -271,6 +271,10 @@ function HomePage() {
         .h-d3 { animation-delay: 0.30s; }
         .h-d4 { animation-delay: 0.44s; }
         .h-d5 { animation-delay: 0.58s; }
+        @keyframes _swipeNudge {
+          0%, 100% { transform: translateX(0); opacity: 0.55; }
+          50%      { transform: translateX(4px); opacity: 1; }
+        }
       `}</style>
 
       {/* ── HERO ─────────────────────────────────────────────── */}
@@ -381,7 +385,19 @@ function HomePage() {
 
       {/* ── MARQUEE STRIP ──────────────────────────────────────── */}
       <div className="bg-primary-500 py-2.5 overflow-hidden">
-        <div className="flex gap-7 px-5 overflow-x-auto scrollbar-hide whitespace-nowrap">
+        <style>{`
+          @keyframes home-marquee-scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+          }
+          @media (prefers-reduced-motion: reduce) {
+            .home-marquee-track { animation: none !important; }
+          }
+        `}</style>
+        <div
+          className="home-marquee-track flex w-max whitespace-nowrap"
+          style={{ animation: 'home-marquee-scroll 28s linear infinite' }}
+        >
           {[
             '✦ Feito à mão',
             '✦ Sem conservantes',
@@ -391,10 +407,18 @@ function HomePage() {
             '✦ Entrega ao domicílio',
             '✦ 100% artesanal',
             '✦ Feito com amor',
-          ].map((badge) => (
+            '✦ Feito à mão',
+            '✦ Sem conservantes',
+            '✦ Pagamento via M-Pesa',
+            '✦ Opção sem lactose',
+            '✦ Opção fitness',
+            '✦ Entrega ao domicílio',
+            '✦ 100% artesanal',
+            '✦ Feito com amor',
+          ].map((badge, i) => (
             <span
-              key={badge}
-              className="flex-shrink-0 text-white/90 text-[10px] font-bold tracking-[0.18em] uppercase"
+              key={`${badge}-${i}`}
+              className="mr-7 flex-shrink-0 text-white/90 text-[10px] font-bold tracking-[0.18em] uppercase"
             >
               {badge}
             </span>
@@ -416,6 +440,18 @@ function HomePage() {
               Ver todos <ChevronRight size={13} />
             </Link>
           </div>
+
+          {!isLoading && (products?.length ?? 0) > 1 && (
+            <div className="md:hidden px-5 mb-3 flex items-center justify-between">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-stone-400">
+                Deslize para ver mais
+              </p>
+              <span className="inline-flex items-center gap-0.5 text-primary-500">
+                <ChevronRight size={13} style={{ animation: '_swipeNudge 1.2s ease-in-out infinite' }} />
+                <ChevronRight size={13} style={{ animation: '_swipeNudge 1.2s ease-in-out infinite 0.16s' }} />
+              </span>
+            </div>
+          )}
 
           {isLoading ? (
             <div className="flex gap-4 px-5 overflow-x-auto scrollbar-hide md:grid md:grid-cols-4 md:px-4 md:overflow-visible">
