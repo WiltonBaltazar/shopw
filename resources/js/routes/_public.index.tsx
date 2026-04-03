@@ -536,16 +536,16 @@ function HomePage() {
         <div className="max-w-xs mx-auto">
           <p className="text-4xl mb-4">🎂</p>
           <h2 className="font-sans font-black text-stone-900 text-2xl md:text-3xl leading-tight mb-3">
-            Pronta a encantar na sua próxima celebração?
+            Pronto(a) a encantar na sua próxima celebração?
           </h2>
           <p className="text-stone-400 text-sm mb-2 leading-relaxed">
-            Explore o menu e personalize o seu cheesecake.
+            Explore o menu e faça a sua encomenda.
           </p>
           <p className="text-stone-400 text-xs mb-7">
             Entrega em Maputo · Pagamento via M-Pesa · 24h de antecedência
           </p>
           <Link
-            to="/menu"
+            to="/encomenda-evento"
             className="inline-flex items-center gap-2 bg-primary-500 hover:bg-primary-600 active:scale-[0.97] text-white font-semibold px-8 py-4 rounded-full transition-all text-sm shadow-lg"
             style={{ boxShadow: '0 8px 24px #685D9438' }}
           >
