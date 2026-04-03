@@ -13,13 +13,15 @@ return new class extends Migration
     {
         Schema::create('mpesa_transactions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('order_id')->constrained()->cascadeOnDelete();
+            $table->unsignedBigInteger('order_id');
             $table->string('transaction_id')->nullable()->unique();
             $table->string('msisdn');
             $table->decimal('amount', 10, 2);
             $table->enum('status', ['pending', 'success', 'failed', 'timeout'])->default('pending');
             $table->json('raw_response')->nullable();
             $table->timestamps();
+
+            $table->index('order_id');
         });
     }
 

@@ -13,12 +13,15 @@ return new class extends Migration
     {
         Schema::create('order_item_addons', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('order_item_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('addon_id')->constrained('product_addons')->restrictOnDelete();
+            $table->unsignedBigInteger('order_item_id');
+            $table->unsignedBigInteger('addon_id');
             $table->string('addon_name');
             $table->text('value')->nullable();
             $table->decimal('price', 10, 2)->default(0);
             $table->timestamps();
+
+            $table->index('order_item_id');
+            $table->index('addon_id');
         });
     }
 
