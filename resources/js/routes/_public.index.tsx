@@ -44,7 +44,7 @@ function TestimonialsSection() {
 
   if (isLoading) {
     return (
-      <div className="flex gap-4 px-5 md:grid md:grid-cols-3 md:gap-5 md:px-4">
+      <div className="flex gap-4 px-4 md:grid md:grid-cols-3 md:gap-5 md:px-6">
         {Array.from({ length: 3 }).map((_, i) => (
           <div key={i} className="h-36 rounded-2xl bg-stone-100 animate-pulse" />
         ))}
@@ -56,7 +56,7 @@ function TestimonialsSection() {
 
   if (!isCarousel) {
     return (
-      <div className="flex gap-4 px-5 overflow-x-auto scrollbar-hide snap-x snap-mandatory md:grid md:grid-cols-3 md:gap-5 md:px-4 md:overflow-x-visible">
+      <div className="flex gap-4 px-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory md:grid md:grid-cols-3 md:gap-5 md:px-6 md:overflow-x-visible">
         {testimonials.map((t) => (
           <TestimonialCard key={t.id} testimonial={t} />
         ))}
@@ -72,12 +72,12 @@ function TestimonialsSection() {
   ]
 
   return (
-    <div className="px-5 md:px-4">
+    <div className="px-4 md:px-6">
       {/* Desktop: 3-up with prev/next */}
       <div className="hidden md:flex items-center gap-4">
         <button
           onClick={prev}
-          className="shrink-0 w-9 h-9 rounded-full border border-stone-200 bg-white hover:bg-stone-50 flex items-center justify-center text-stone-500 hover:text-stone-800 transition-colors shadow-sm"
+          className="shrink-0 w-11 h-11 rounded-full border border-stone-200 bg-white hover:bg-stone-50 flex items-center justify-center text-stone-500 hover:text-stone-800 transition-colors shadow-sm"
           aria-label="Anterior"
         >
           <ChevronLeft size={16} />
@@ -94,7 +94,7 @@ function TestimonialsSection() {
         </div>
         <button
           onClick={next}
-          className="shrink-0 w-9 h-9 rounded-full border border-stone-200 bg-white hover:bg-stone-50 flex items-center justify-center text-stone-500 hover:text-stone-800 transition-colors shadow-sm"
+          className="shrink-0 w-11 h-11 rounded-full border border-stone-200 bg-white hover:bg-stone-50 flex items-center justify-center text-stone-500 hover:text-stone-800 transition-colors shadow-sm"
           aria-label="Seguinte"
         >
           <ChevronRight size={16} />
@@ -111,7 +111,7 @@ function TestimonialsSection() {
             <button
               key={i}
               onClick={() => setCurrent(i)}
-              className={`rounded-full transition-all ${i === current ? 'w-5 h-1.5 bg-primary-500' : 'w-1.5 h-1.5 bg-stone-300'}`}
+              className={`rounded-full transition-all p-2.5 -m-2.5 box-content ${i === current ? 'w-5 h-1.5 bg-primary-500' : 'w-1.5 h-1.5 bg-stone-300'}`}
               aria-label={`Testemunho ${i + 1}`}
             />
           ))}
@@ -124,7 +124,7 @@ function TestimonialsSection() {
           <button
             key={i}
             onClick={() => setCurrent(i)}
-            className={`rounded-full transition-all ${i === current ? 'w-5 h-1.5 bg-primary-500' : 'w-1.5 h-1.5 bg-stone-300'}`}
+            className={`rounded-full transition-all p-2.5 -m-2.5 box-content ${i === current ? 'w-5 h-1.5 bg-primary-500' : 'w-1.5 h-1.5 bg-stone-300'}`}
             aria-label={`Testemunho ${i + 1}`}
           />
         ))}
@@ -170,8 +170,8 @@ function BlogPreviewSection() {
   return (
     <section className="py-14 md:py-20">
       <div className="max-w-6xl mx-auto">
-        <div className="flex items-baseline justify-between px-5 md:px-4 mb-7">
-          <h2 className="font-sans font-bold text-stone-900 text-xl md:text-2xl">
+        <div className="flex items-baseline justify-between px-4 md:px-6 mb-7">
+          <h2 className="font-sans font-bold text-stone-900 text-xl md:text-2xl lg:text-3xl">
             Dicas &amp; Inspiração
           </h2>
           <Link
@@ -183,7 +183,7 @@ function BlogPreviewSection() {
         </div>
 
         {isLoading ? (
-          <div className="grid md:grid-cols-3 gap-5 px-5 md:px-4">
+          <div className="grid md:grid-cols-3 gap-5 px-4 md:px-6">
             {Array.from({ length: 3 }).map((_, i) => (
               <div key={i} className="rounded-2xl overflow-hidden border border-stone-100">
                 <div className="aspect-[16/9] bg-stone-100 animate-pulse" />
@@ -195,7 +195,7 @@ function BlogPreviewSection() {
             ))}
           </div>
         ) : (
-          <div className="grid md:grid-cols-3 gap-5 px-5 md:px-4">
+          <div className="grid md:grid-cols-3 gap-5 px-4 md:px-6">
             {preview.map((post) => (
               <Link
                 key={post.id}
@@ -429,8 +429,8 @@ function HomePage() {
       {/* ── FEATURED PRODUCTS ──────────────────────────────────── */}
       <section className="py-14 md:py-20">
         <div className="max-w-6xl mx-auto">
-          <div className="flex items-baseline justify-between px-5 md:px-4 mb-7">
-            <h2 className="font-sans font-bold text-stone-900 text-xl md:text-2xl">
+          <div className="flex items-baseline justify-between px-4 md:px-6 mb-7">
+            <h2 className="font-sans font-bold text-stone-900 text-xl md:text-2xl lg:text-3xl">
               Os nossos clássicos
             </h2>
             <Link
@@ -442,7 +442,7 @@ function HomePage() {
           </div>
 
           {!isLoading && (products?.length ?? 0) > 1 && (
-            <div className="md:hidden px-5 mb-3 flex items-center justify-between">
+            <div className="md:hidden px-4 mb-3 flex items-center justify-between">
               <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-stone-400">
                 Deslize para ver mais
               </p>
@@ -454,7 +454,7 @@ function HomePage() {
           )}
 
           {isLoading ? (
-            <div className="flex gap-4 px-5 overflow-x-auto scrollbar-hide md:grid md:grid-cols-4 md:px-4 md:overflow-visible">
+            <div className="flex gap-4 px-4 overflow-x-auto scrollbar-hide md:grid md:grid-cols-4 md:px-6 md:overflow-visible">
               {Array.from({ length: 4 }).map((_, i) => (
                 <div
                   key={i}
@@ -463,7 +463,7 @@ function HomePage() {
               ))}
             </div>
           ) : (
-            <div className="flex gap-4 px-5 overflow-x-auto scrollbar-hide snap-x snap-mandatory md:grid md:grid-cols-4 md:gap-5 md:px-4 md:overflow-x-visible">
+            <div className="flex gap-4 px-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory md:grid md:grid-cols-4 md:gap-5 md:px-6 md:overflow-x-visible">
               {products?.slice(0, 6).map((p) => (
                 <div
                   key={p.id}
@@ -480,7 +480,7 @@ function HomePage() {
       {/* ── TESTIMONIALS ───────────────────────────────────────── */}
       <section className="py-14 md:py-20 bg-stone-50">
         <div className="max-w-6xl mx-auto">
-          <h2 className="font-sans font-bold text-stone-900 text-xl md:text-2xl px-5 md:px-4 mb-8">
+          <h2 className="font-sans font-bold text-stone-900 text-xl md:text-2xl lg:text-3xl px-4 md:px-6 mb-8">
             O que dizem os nossos clientes
           </h2>
           <TestimonialsSection />
@@ -489,8 +489,8 @@ function HomePage() {
 
       {/* ── HOW IT WORKS ───────────────────────────────────────── */}
       <section className="bg-stone-50 py-14 md:py-20">
-        <div className="max-w-lg mx-auto md:max-w-6xl px-5 md:px-4">
-          <h2 className="font-sans font-bold text-stone-900 text-xl md:text-2xl text-center mb-10">
+        <div className="max-w-lg mx-auto md:max-w-6xl px-4 md:px-6">
+          <h2 className="font-sans font-bold text-stone-900 text-xl md:text-2xl lg:text-3xl text-center mb-10">
             Como funciona
           </h2>
 
@@ -527,8 +527,8 @@ function HomePage() {
 
       {/* ── FAQ ───────────────────────────────────────────────── */}
       <section className="py-14 md:py-20">
-        <div className="max-w-2xl mx-auto px-5 md:px-4">
-          <h2 className="font-sans font-bold text-stone-900 text-xl md:text-2xl mb-8 text-center">
+        <div className="max-w-2xl mx-auto px-4 md:px-6">
+          <h2 className="font-sans font-bold text-stone-900 text-xl md:text-2xl lg:text-3xl mb-8 text-center">
             Perguntas frequentes
           </h2>
           <div className="space-y-3">
@@ -569,7 +569,7 @@ function HomePage() {
 
       {/* ── BOTTOM CTA ─────────────────────────────────────────── */}
       <section className="py-16 px-5 text-center">
-        <div className="max-w-xs mx-auto">
+        <div className="max-w-sm mx-auto">
           <p className="text-4xl mb-4">🎂</p>
           <h2 className="font-sans font-black text-stone-900 text-2xl md:text-3xl leading-tight mb-3">
             Pronto(a) a encantar na sua próxima celebração?

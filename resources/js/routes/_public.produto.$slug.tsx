@@ -408,7 +408,7 @@ function ProductPage() {
                     key={i}
                     onClick={() => scrollToImage(i)}
                     className={cn(
-                      'w-2 h-2 rounded-full transition-all duration-200',
+                      'w-2 h-2 rounded-full transition-all duration-200 p-2.5 -m-2.5 box-content',
                       i === imageIndex ? 'bg-primary-500 w-4' : 'bg-stone-300',
                     )}
                     aria-label={`Imagem ${i + 1}`}
@@ -434,13 +434,13 @@ function ProductPage() {
                 <>
                   <button
                     onClick={() => setImageIndex((i) => (i - 1 + images.length) % images.length)}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-white/80 rounded-full flex items-center justify-center shadow hover:bg-white transition-colors"
+                    className="absolute left-3 top-1/2 -translate-y-1/2 w-11 h-11 bg-white/80 rounded-full flex items-center justify-center shadow hover:bg-white transition-colors"
                   >
                     <ChevronLeft size={16} />
                   </button>
                   <button
                     onClick={() => setImageIndex((i) => (i + 1) % images.length)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-white/80 rounded-full flex items-center justify-center shadow hover:bg-white transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 w-11 h-11 bg-white/80 rounded-full flex items-center justify-center shadow hover:bg-white transition-colors"
                   >
                     <ChevronRight size={16} />
                   </button>
@@ -473,7 +473,7 @@ function ProductPage() {
             <div className="absolute top-0 right-0">
               <button
                 onClick={handleToggleFavorite}
-                className="p-2 rounded-full hover:bg-stone-100 transition-colors"
+                className="p-3 rounded-full hover:bg-stone-100 transition-colors"
                 aria-label={isFavorited ? 'Remover dos favoritos' : 'Guardar nos favoritos'}
               >
                 <Heart
@@ -514,7 +514,7 @@ function ProductPage() {
               : `A partir de ${formatPrice(Math.min(...product.variants.map((v) => v.price)))}`}
           </p>
 
-          <p className="text-sm text-stone-500 leading-relaxed whitespace-pre-line mb-6">
+          <p className="text-sm md:text-base text-stone-500 leading-relaxed whitespace-pre-line mb-6">
             {product.description}
           </p>
 

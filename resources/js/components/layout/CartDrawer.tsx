@@ -35,7 +35,7 @@ export function CartDrawer({ open, onClose }: Props) {
           <h2 className="font-serif text-lg font-semibold text-stone-800">
             Carrinho {itemCount() > 0 && <span className="text-stone-400 font-sans text-sm font-normal">({itemCount()})</span>}
           </h2>
-          <button onClick={onClose} className="p-2 -mr-1 text-stone-500 hover:text-stone-800" aria-label="Fechar carrinho">
+          <button onClick={onClose} className="p-3 -mr-2 text-stone-500 hover:text-stone-800" aria-label="Fechar carrinho">
             <X size={20} />
           </button>
         </div>

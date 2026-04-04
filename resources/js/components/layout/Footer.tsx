@@ -10,7 +10,7 @@ export function Footer() {
   return (
     <footer className="mt-20">
       <div className="bg-primary-500 text-white">
-        <div className="max-w-6xl mx-auto px-5 md:px-6 py-12 md:py-20 grid grid-cols-1 md:grid-cols-[1.15fr_1fr_1fr] gap-10 md:gap-12">
+        <div className="max-w-6xl mx-auto px-5 md:px-6 py-12 md:py-20 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-[1.15fr_1fr_1fr] gap-10 md:gap-12">
           <div>
             <Link to="/" className="inline-flex items-center">
               {footerLogo ? (
@@ -36,7 +36,7 @@ export function Footer() {
                 href="https://instagram.com/cheesemaniaa"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center w-9 h-9 rounded-full border border-white/35 hover:border-white hover:bg-white/10 transition-colors"
+                className="inline-flex items-center justify-center w-11 h-11 rounded-full border border-white/35 hover:border-white hover:bg-white/10 transition-colors"
                 aria-label="Instagram"
               >
                 <Instagram size={18} />
@@ -45,7 +45,7 @@ export function Footer() {
                 href="https://www.tiktok.com/@cheesemaniaa"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center w-9 h-9 rounded-full border border-white/35 hover:border-white hover:bg-white/10 transition-colors"
+                className="inline-flex items-center justify-center w-11 h-11 rounded-full border border-white/35 hover:border-white hover:bg-white/10 transition-colors"
                 aria-label="TikTok"
               >
                 <svg viewBox="0 0 24 24" className="w-[17px] h-[17px] fill-current" aria-hidden>
