@@ -65,6 +65,8 @@ export function CartDrawer({ open, onClose }: Props) {
                   <img
                     src={item.productImage}
                     alt={item.productName}
+                    loading="lazy"
+                    decoding="async"
                     className="w-16 h-16 rounded-lg object-cover flex-shrink-0"
                   />
                 )}

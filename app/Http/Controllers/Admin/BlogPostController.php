@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Concerns\ConvertsToWebp;
 use App\Http\Controllers\Controller;
 use App\Models\BlogPost;
 use Illuminate\Http\JsonResponse;
@@ -11,6 +12,8 @@ use Illuminate\Support\Str;
 
 class BlogPostController extends Controller
 {
+    use ConvertsToWebp;
+
     public function index(): JsonResponse
     {
         $posts = BlogPost::orderByDesc('is_sticky')->orderBy('sort_order')->orderByDesc('id')->get();
@@ -38,7 +41,7 @@ class BlogPostController extends Controller
         }
 
         if ($request->hasFile('cover_image')) {
-            $path = $request->file('cover_image')->store('blog', 'public');
+            $path = $this->storeAsWebp($request->file('cover_image'), 'blog');
             $data['cover_image_url'] = asset('storage/' . $path);
         }
 
@@ -70,7 +73,7 @@ class BlogPostController extends Controller
 
         if ($request->hasFile('cover_image')) {
             $this->deleteCoverImage($blogPost);
-            $path = $request->file('cover_image')->store('blog', 'public');
+            $path = $this->storeAsWebp($request->file('cover_image'), 'blog');
             $data['cover_image_url'] = asset('storage/' . $path);
         } elseif (!empty($data['remove_cover_image'])) {
             $this->deleteCoverImage($blogPost);

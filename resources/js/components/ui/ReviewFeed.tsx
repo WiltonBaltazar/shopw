@@ -92,6 +92,8 @@ export function ReviewFeed({ reviews, averageRating, reviewsCount }: ReviewFeedP
               <img
                 src={review.photo_url}
                 alt="Foto da avaliação"
+                loading="lazy"
+                decoding="async"
                 className="mt-2 rounded-xl w-32 h-32 object-cover border border-stone-100"
               />
             )}

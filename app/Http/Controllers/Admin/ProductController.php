@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Concerns\ConvertsToWebp;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
@@ -20,6 +21,8 @@ use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
+    use ConvertsToWebp;
+
     public function index(): JsonResponse
     {
         $products = Product::with(['images', 'variants', 'category'])
@@ -441,7 +444,7 @@ class ProductController extends Controller
         $uploaded = [];
 
         foreach ($request->file('images') as $index => $file) {
-            $path = $file->store("products/{$productModel->id}", 'public');
+            $path = $this->storeAsWebp($file, "products/{$productModel->id}");
             $image = $productModel->images()->create([
                 'path'       => $path,
                 'alt'        => $productModel->name,

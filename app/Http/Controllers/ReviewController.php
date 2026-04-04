@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Concerns\ConvertsToWebp;
 use App\Models\Product;
 use App\Models\ProductReview;
 use App\Services\ReviewService;
@@ -11,6 +12,8 @@ use Illuminate\Support\Facades\Storage;
 
 class ReviewController extends Controller
 {
+    use ConvertsToWebp;
+
     public function __construct(private ReviewService $service) {}
 
     /**
@@ -74,7 +77,7 @@ class ReviewController extends Controller
 
         $photoPath = null;
         if ($request->hasFile('photo')) {
-            $photoPath = $request->file('photo')->store('reviews', 'public');
+            $photoPath = $this->storeAsWebp($request->file('photo'), 'reviews');
         }
 
         $verified = isset($data['customer_phone']) && $data['customer_phone']

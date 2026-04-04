@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Concerns\ConvertsToWebp;
 use App\Http\Controllers\Controller;
 use App\Models\Setting;
 use Illuminate\Http\JsonResponse;
@@ -10,6 +11,8 @@ use Illuminate\Support\Facades\Storage;
 
 class SettingsController extends Controller
 {
+    use ConvertsToWebp;
+
     private const EDITABLE_KEYS = [
         'whatsapp_number',
         'pay_on_delivery_enabled',
@@ -115,7 +118,9 @@ class SettingsController extends Controller
             }
         }
 
-        $path = $request->file('image')->store('settings', 'public');
+        $path = $key === 'favicon_url'
+            ? $request->file('image')->store('settings', 'public')
+            : $this->storeAsWebp($request->file('image'), 'settings');
         $url  = asset('storage/' . $path);
         Setting::set($key, $url);
 

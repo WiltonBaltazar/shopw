@@ -54,7 +54,7 @@ export function CartToast({ onOpenCart }: { onOpenCart: () => void }) {
           {/* Product image or icon */}
           <div className="w-12 h-12 rounded-xl overflow-hidden bg-stone-100 shrink-0">
             {lastAdded.productImage ? (
-              <img src={lastAdded.productImage} alt={lastAdded.productName} className="w-full h-full object-cover" />
+              <img src={lastAdded.productImage} alt={lastAdded.productName} loading="lazy" decoding="async" className="w-full h-full object-cover" />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-xl">🍰</div>
             )}

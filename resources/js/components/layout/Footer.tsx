@@ -17,6 +17,8 @@ export function Footer() {
                 <img
                   src={footerLogo}
                   alt={siteName}
+                  loading="lazy"
+                  decoding="async"
                   className="h-24 w-auto object-contain brightness-0 invert"
                   onError={(e) => {
                     ;(e.currentTarget as HTMLImageElement).style.display = 'none'
