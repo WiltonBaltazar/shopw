@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/ping', function () {
     return response()->json([
         'status' => 'ok',
-        'message' => 'Cheesemania API is running',
+        'message' => config('app.name') . ' API is running',
         'version' => '1.0.0',
     ]);
 });
@@ -31,23 +31,36 @@ Route::get('/settings', function () {
     $s = \App\Models\Setting::class;
     $payOnDeliveryRaw = $s::get('pay_on_delivery_enabled', '0');
     return response()->json(['data' => [
-        'whatsapp_number'      => $s::get('whatsapp_number', '258840000000'),
+        'whatsapp_number'      => $s::get('whatsapp_number', ''),
         'pay_on_delivery_enabled' => in_array(strtolower((string) $payOnDeliveryRaw), ['1', 'true', 'yes', 'on'], true),
-        'seo_site_name'        => $s::get('seo_site_name', 'Cheesemania'),
-        'seo_home_title'       => $s::get('seo_home_title', 'Cheesemania — Cheesecakes Homemade em Maputo'),
-        'seo_home_description' => $s::get('seo_home_description', 'Cheesecakes Homemade feitos com amor em Maputo, Moçambique. Encomende online e receba na sua porta. Opções sem lactose e fitness disponíveis.'),
-        'seo_menu_title'       => $s::get('seo_menu_title', 'Menu de Cheesecakes — Cheesemania Maputo'),
-        'seo_menu_description' => $s::get('seo_menu_description', 'Explore o nosso menu de cheesecakes Homemade em Maputo. Sem lactose, fitness e sabores clássicos. Entrega ao domicílio em Maputo e Matola.'),
+        'seo_site_name'        => $s::get('seo_site_name', config('app.name')),
+        'seo_home_title'       => $s::get('seo_home_title', config('app.name')),
+        'seo_home_description' => $s::get('seo_home_description', ''),
+        'seo_menu_title'       => $s::get('seo_menu_title', ''),
+        'seo_menu_description' => $s::get('seo_menu_description', ''),
         'seo_og_image'         => $s::get('seo_og_image', ''),
         'favicon_url'          => $s::get('favicon_url', ''),
         'brand_logo_url'       => $s::get('brand_logo_url', null),
         'footer_logo_url'      => $s::get('footer_logo_url', null),
-        'hero_tagline'         => $s::get('hero_tagline', 'Homemade · Maputo'),
-        'hero_heading'         => $s::get('hero_heading', "More Cheese,\nMore Joy"),
-        'hero_subheading'      => $s::get('hero_subheading', 'Cheesecakes Homemade feitos com amor, prontos para a sua celebração especial.'),
-        'hero_cta_text'        => $s::get('hero_cta_text', 'Ver o Menu'),
+        'hero_tagline'         => $s::get('hero_tagline', ''),
+        'hero_heading'         => $s::get('hero_heading', ''),
+        'hero_subheading'      => $s::get('hero_subheading', ''),
+        'hero_cta_text'        => $s::get('hero_cta_text', 'Shop Now'),
         'hero_image_url'       => $s::get('hero_image_url', null),
         'theme_primary_color'  => $s::get('theme_primary_color', '#685D94'),
+        'social_instagram'     => $s::get('social_instagram', null),
+        'social_tiktok'        => $s::get('social_tiktok', null),
+        'social_facebook'      => $s::get('social_facebook', null),
+        'social_twitter'       => $s::get('social_twitter', null),
+        'social_youtube'       => $s::get('social_youtube', null),
+        'social_linkedin'      => $s::get('social_linkedin', null),
+        'social_whatsapp'      => $s::get('social_whatsapp', null),
+        'store_currency'       => $s::get('store_currency', 'USD'),
+        'store_phone'          => $s::get('store_phone', ''),
+        'store_address'        => $s::get('store_address', ''),
+        'store_city'           => $s::get('store_city', ''),
+        'store_country'        => $s::get('store_country', ''),
+        'store_business_type'  => $s::get('store_business_type', 'LocalBusiness'),
     ]]);
 });
 Route::get('/blocked-dates', function () {
@@ -81,6 +94,13 @@ Route::get('/testimonials', function () {
         ->orderBy('id')
         ->get(['id', 'author_name', 'author_detail', 'quote', 'rating']);
     return response()->json(['data' => $testimonials]);
+});
+Route::get('/faqs', function () {
+    $faqs = \App\Models\Faq::active()
+        ->orderBy('sort_order')
+        ->orderBy('id')
+        ->get(['id', 'question', 'answer']);
+    return response()->json(['data' => $faqs]);
 });
 Route::get('/products/{slug}/reviews', [\App\Http\Controllers\ReviewController::class, 'index']);
 Route::post('/products/{slug}/reviews', [\App\Http\Controllers\ReviewController::class, 'store']);
@@ -174,6 +194,11 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::post('/testimonials', [\App\Http\Controllers\Admin\TestimonialController::class, 'store']);
     Route::patch('/testimonials/{testimonial}', [\App\Http\Controllers\Admin\TestimonialController::class, 'update']);
     Route::delete('/testimonials/{testimonial}', [\App\Http\Controllers\Admin\TestimonialController::class, 'destroy']);
+
+    Route::get('/faqs', [\App\Http\Controllers\Admin\FaqController::class, 'index']);
+    Route::post('/faqs', [\App\Http\Controllers\Admin\FaqController::class, 'store']);
+    Route::patch('/faqs/{faq}', [\App\Http\Controllers\Admin\FaqController::class, 'update']);
+    Route::delete('/faqs/{faq}', [\App\Http\Controllers\Admin\FaqController::class, 'destroy']);
 
     Route::get('/attributes', [\App\Http\Controllers\Admin\GlobalAttributeController::class, 'index']);
     Route::post('/attributes', [\App\Http\Controllers\Admin\GlobalAttributeController::class, 'store']);

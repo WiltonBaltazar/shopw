@@ -277,6 +277,19 @@ export interface AppSettings {
   blocked_weekdays: string | null
   delivery_start_hour: string | null
   delivery_end_hour: string | null
+  social_instagram: string | null
+  social_tiktok: string | null
+  social_facebook: string | null
+  social_twitter: string | null
+  social_youtube: string | null
+  social_linkedin: string | null
+  social_whatsapp: string | null
+  store_currency: string | null
+  store_phone: string | null
+  store_address: string | null
+  store_city: string | null
+  store_country: string | null
+  store_business_type: string | null
 }
 
 export interface BlockedDate {
@@ -493,6 +506,38 @@ export const updateTestimonial = (id: number, data: Partial<{
 
 export const deleteTestimonial = (id: number) =>
   api.delete(`/admin/testimonials/${id}`).then((r) => r.data)
+
+// ─── FAQs ─────────────────────────────────────────────────────────────────────
+
+export interface AdminFaq {
+  id: number
+  question: string
+  answer: string
+  is_active: boolean
+  sort_order: number
+  created_at: string
+  updated_at: string
+}
+
+export const getAdminFaqs = () =>
+  api.get<{ data: AdminFaq[] }>('/admin/faqs').then((r) => r.data.data)
+
+export const createFaq = (data: {
+  question: string
+  answer: string
+  is_active?: boolean
+  sort_order?: number
+}) => api.post<{ data: AdminFaq }>('/admin/faqs', data).then((r) => r.data.data)
+
+export const updateFaq = (id: number, data: Partial<{
+  question: string
+  answer: string
+  is_active: boolean
+  sort_order: number
+}>) => api.patch<{ data: AdminFaq }>(`/admin/faqs/${id}`, data).then((r) => r.data.data)
+
+export const deleteFaq = (id: number) =>
+  api.delete(`/admin/faqs/${id}`).then((r) => r.data)
 
 // ─── Reports ──────────────────────────────────────────────────────────────────
 

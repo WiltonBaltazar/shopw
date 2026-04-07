@@ -4,6 +4,8 @@ namespace App\Concerns;
 
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Drivers\Gd\Driver as GdDriver;
+use Intervention\Image\Encoders\WebpEncoder;
 use Intervention\Image\ImageManager;
 
 trait ConvertsToWebp
@@ -14,8 +16,8 @@ trait ConvertsToWebp
      */
     protected function storeAsWebp(UploadedFile $file, string $directory): string
     {
-        $manager = ImageManager::gd();
-        $encoded = $manager->read($file->getRealPath())->toWebp(85);
+        $manager = new ImageManager(new GdDriver());
+        $encoded = $manager->decode($file->getRealPath())->encode(new WebpEncoder(85));
         $filename = pathinfo($file->hashName(), PATHINFO_FILENAME) . '.webp';
         $path = "{$directory}/{$filename}";
         Storage::disk('public')->put($path, $encoded);

@@ -34,6 +34,19 @@ class SettingsController extends Controller
         'blocked_weekdays',
         'delivery_start_hour',
         'delivery_end_hour',
+        'social_instagram',
+        'social_tiktok',
+        'social_facebook',
+        'social_twitter',
+        'social_youtube',
+        'social_linkedin',
+        'social_whatsapp',
+        'store_currency',
+        'store_phone',
+        'store_address',
+        'store_city',
+        'store_country',
+        'store_business_type',
     ];
 
     public function index(): JsonResponse
@@ -74,6 +87,19 @@ class SettingsController extends Controller
             'blocked_weekdays'     => ['sometimes', 'nullable', 'json'],
             'delivery_start_hour'  => ['sometimes', 'nullable', 'integer', 'min:0', 'max:23'],
             'delivery_end_hour'    => ['sometimes', 'nullable', 'integer', 'min:0', 'max:23'],
+            'social_instagram'     => ['sometimes', 'nullable', 'string', 'max:500'],
+            'social_tiktok'        => ['sometimes', 'nullable', 'string', 'max:500'],
+            'social_facebook'      => ['sometimes', 'nullable', 'string', 'max:500'],
+            'social_twitter'       => ['sometimes', 'nullable', 'string', 'max:500'],
+            'social_youtube'       => ['sometimes', 'nullable', 'string', 'max:500'],
+            'social_linkedin'      => ['sometimes', 'nullable', 'string', 'max:500'],
+            'social_whatsapp'      => ['sometimes', 'nullable', 'string', 'max:500'],
+            'store_currency'       => ['sometimes', 'nullable', 'string', 'max:10'],
+            'store_phone'          => ['sometimes', 'nullable', 'string', 'max:30'],
+            'store_address'        => ['sometimes', 'nullable', 'string', 'max:255'],
+            'store_city'           => ['sometimes', 'nullable', 'string', 'max:100'],
+            'store_country'        => ['sometimes', 'nullable', 'string', 'max:100'],
+            'store_business_type'  => ['sometimes', 'nullable', 'string', 'max:60'],
         ]);
 
         foreach ($data as $key => $value) {

@@ -43,7 +43,7 @@ export function Navbar() {
           <Link to="/" className="flex items-center">
             {settings.brand_logo_url
               ? <img src={settings.brand_logo_url} alt={settings.seo_site_name ?? 'Logo'} className="h-8 w-auto object-contain" onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }} />
-              : <span className="font-serif text-xl font-semibold text-stone-800 tracking-wide">{settings.seo_site_name || 'Cheesemania'}</span>
+              : <span className="font-serif text-xl font-semibold text-stone-800 tracking-wide">{settings.seo_site_name || ''}</span>
             }
           </Link>
 

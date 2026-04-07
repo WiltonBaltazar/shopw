@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Plus, Pencil, Trash2, X, Check, Globe, EyeOff, ImagePlus, Trash, Bold, Italic, Underline as UnderlineIcon, List, ListOrdered, Heading2, Heading3, Quote, Pin } from 'lucide-react'
+import { Plus, Pencil, Trash2, X, Check, ImagePlus, Trash, Bold, Italic, Underline as UnderlineIcon, List, ListOrdered, Heading2, Heading3, Quote, Pin } from 'lucide-react'
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Underline from '@tiptap/extension-underline'
@@ -14,6 +14,7 @@ import {
   type AdminBlogPost,
 } from '~/lib/adminApi'
 import { cn } from '~/lib/utils'
+import { ToggleSwitch } from '~/components/admin/Toggle'
 
 // ---------------------------------------------------------------------------
 // Rich text editor
@@ -520,18 +521,11 @@ function BlogPage() {
                   <p className="text-sm text-stone-500 line-clamp-1">{p.excerpt}</p>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
-                  <button
-                    onClick={() => toggleMutation.mutate({ id: p.id, is_published: !p.is_published })}
-                    className={cn(
-                      'flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full transition-colors',
-                      p.is_published
-                        ? 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100'
-                        : 'bg-stone-100 text-stone-400 hover:bg-stone-200',
-                    )}
-                  >
-                    {p.is_published ? <Globe size={11} /> : <EyeOff size={11} />}
-                    {p.is_published ? 'Publicado' : 'Rascunho'}
-                  </button>
+                  <ToggleSwitch
+                    checked={p.is_published}
+                    onChange={() => toggleMutation.mutate({ id: p.id, is_published: !p.is_published })}
+                    disabled={toggleMutation.isPending}
+                  />
                   <button
                     onClick={() => openEdit(p)}
                     className="w-7 h-7 rounded-lg flex items-center justify-center text-stone-400 hover:text-stone-600 hover:bg-stone-100 transition-colors"

@@ -1,97 +1,75 @@
 import { useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Plus, Pencil, Trash2, Star, X, Check } from 'lucide-react'
+import { Plus, Pencil, Trash2, X, Check } from 'lucide-react'
 import {
-  getAdminTestimonials,
-  createTestimonial,
-  updateTestimonial,
-  deleteTestimonial,
-  type AdminTestimonial,
+  getAdminFaqs,
+  createFaq,
+  updateFaq,
+  deleteFaq,
+  type AdminFaq,
 } from '~/lib/adminApi'
 import { cn } from '~/lib/utils'
 import { ToggleSwitch } from '~/components/admin/Toggle'
 
-export const Route = createFileRoute('/admin/testimonials')({
-  component: TestimonialsPage,
+export const Route = createFileRoute('/admin/faqs')({
+  component: FaqsPage,
 })
 
 const EMPTY_FORM = {
-  author_name: '',
-  author_detail: '',
-  quote: '',
-  rating: 5,
+  question: '',
+  answer: '',
   is_active: true,
   sort_order: 0,
 }
 
 type FormState = typeof EMPTY_FORM
 
-function StarPicker({ value, onChange }: { value: number; onChange: (v: number) => void }) {
-  return (
-    <div className="flex gap-1">
-      {[1, 2, 3, 4, 5].map((i) => (
-        <button
-          key={i}
-          type="button"
-          onClick={() => onChange(i)}
-          className="p-0.5"
-        >
-          <Star
-            size={18}
-            className={cn(i <= value ? 'fill-amber-400 text-amber-400' : 'text-stone-300 fill-stone-100')}
-          />
-        </button>
-      ))}
-    </div>
-  )
-}
-
-function TestimonialsPage() {
+function FaqsPage() {
   const queryClient = useQueryClient()
   const [showForm, setShowForm] = useState(false)
-  const [editing, setEditing] = useState<AdminTestimonial | null>(null)
+  const [editing, setEditing] = useState<AdminFaq | null>(null)
   const [form, setForm] = useState<FormState>(EMPTY_FORM)
   const [deleteId, setDeleteId] = useState<number | null>(null)
 
-  const { data: testimonials = [], isLoading } = useQuery({
-    queryKey: ['admin', 'testimonials'],
-    queryFn: getAdminTestimonials,
+  const { data: faqs = [], isLoading } = useQuery({
+    queryKey: ['admin', 'faqs'],
+    queryFn: getAdminFaqs,
   })
 
   const createMutation = useMutation({
-    mutationFn: createTestimonial,
+    mutationFn: createFaq,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin', 'testimonials'] })
-      queryClient.invalidateQueries({ queryKey: ['testimonials'] })
+      queryClient.invalidateQueries({ queryKey: ['admin', 'faqs'] })
+      queryClient.invalidateQueries({ queryKey: ['faqs'] })
       closeForm()
     },
   })
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: number; data: Parameters<typeof updateTestimonial>[1] }) =>
-      updateTestimonial(id, data),
+    mutationFn: ({ id, data }: { id: number; data: Parameters<typeof updateFaq>[1] }) =>
+      updateFaq(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin', 'testimonials'] })
-      queryClient.invalidateQueries({ queryKey: ['testimonials'] })
+      queryClient.invalidateQueries({ queryKey: ['admin', 'faqs'] })
+      queryClient.invalidateQueries({ queryKey: ['faqs'] })
       closeForm()
     },
   })
 
   const toggleMutation = useMutation({
     mutationFn: ({ id, is_active }: { id: number; is_active: boolean }) =>
-      updateTestimonial(id, { is_active }),
+      updateFaq(id, { is_active }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin', 'testimonials'] })
-      queryClient.invalidateQueries({ queryKey: ['testimonials'] })
+      queryClient.invalidateQueries({ queryKey: ['admin', 'faqs'] })
+      queryClient.invalidateQueries({ queryKey: ['faqs'] })
     },
   })
 
   const deleteMutation = useMutation({
-    mutationFn: deleteTestimonial,
+    mutationFn: deleteFaq,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin', 'testimonials'] })
-      queryClient.invalidateQueries({ queryKey: ['testimonials'] })
+      queryClient.invalidateQueries({ queryKey: ['admin', 'faqs'] })
+      queryClient.invalidateQueries({ queryKey: ['faqs'] })
       setDeleteId(null)
     },
   })
@@ -102,15 +80,13 @@ function TestimonialsPage() {
     setShowForm(true)
   }
 
-  function openEdit(t: AdminTestimonial) {
-    setEditing(t)
+  function openEdit(f: AdminFaq) {
+    setEditing(f)
     setForm({
-      author_name: t.author_name,
-      author_detail: t.author_detail ?? '',
-      quote: t.quote,
-      rating: t.rating,
-      is_active: t.is_active,
-      sort_order: t.sort_order,
+      question: f.question,
+      answer: f.answer,
+      is_active: f.is_active,
+      sort_order: f.sort_order,
     })
     setShowForm(true)
   }
@@ -123,14 +99,10 @@ function TestimonialsPage() {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    const payload = {
-      ...form,
-      author_detail: form.author_detail || null,
-    }
     if (editing) {
-      updateMutation.mutate({ id: editing.id, data: payload })
+      updateMutation.mutate({ id: editing.id, data: form })
     } else {
-      createMutation.mutate(payload)
+      createMutation.mutate(form)
     }
   }
 
@@ -140,10 +112,10 @@ function TestimonialsPage() {
     <div className="p-8 max-w-4xl">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="font-serif text-3xl text-stone-900">Testemunhos</h1>
+          <h1 className="font-serif text-3xl text-stone-900">FAQs</h1>
           <p className="text-stone-500 text-sm mt-1">
-            {testimonials.length > 0
-              ? `${testimonials.length} testemunho${testimonials.length !== 1 ? 's' : ''} · ${testimonials.filter((t) => t.is_active).length} ativo${testimonials.filter((t) => t.is_active).length !== 1 ? 's' : ''}`
+            {faqs.length > 0
+              ? `${faqs.length} pergunta${faqs.length !== 1 ? 's' : ''} · ${faqs.filter((f) => f.is_active).length} ativa${faqs.filter((f) => f.is_active).length !== 1 ? 's' : ''}`
               : ''}
           </p>
         </div>
@@ -152,7 +124,7 @@ function TestimonialsPage() {
           className="flex items-center gap-2 bg-primary-500 hover:bg-primary-600 text-white text-sm font-semibold px-4 py-2 rounded-xl transition-colors"
         >
           <Plus size={15} />
-          Novo testemunho
+          Nova pergunta
         </button>
       </div>
 
@@ -162,58 +134,41 @@ function TestimonialsPage() {
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg">
             <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-stone-100">
               <h2 className="font-semibold text-stone-900">
-                {editing ? 'Editar testemunho' : 'Novo testemunho'}
+                {editing ? 'Editar pergunta' : 'Nova pergunta'}
               </h2>
               <button onClick={closeForm} className="text-stone-400 hover:text-stone-600 transition-colors">
                 <X size={18} />
               </button>
             </div>
             <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-medium text-stone-600 mb-1.5">
-                    Nome <span className="text-red-400">*</span>
-                  </label>
-                  <input
-                    required
-                    value={form.author_name}
-                    onChange={(e) => setForm((f) => ({ ...f, author_name: e.target.value }))}
-                    placeholder="Ana M."
-                    className="w-full border border-stone-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-transparent"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-stone-600 mb-1.5">
-                    Detalhe
-                  </label>
-                  <input
-                    value={form.author_detail}
-                    onChange={(e) => setForm((f) => ({ ...f, author_detail: e.target.value }))}
-                    placeholder="Maputo · Cliente desde 2023"
-                    className="w-full border border-stone-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-transparent"
-                  />
-                </div>
+              <div>
+                <label className="block text-xs font-medium text-stone-600 mb-1.5">
+                  Pergunta <span className="text-red-400">*</span>
+                </label>
+                <input
+                  required
+                  value={form.question}
+                  onChange={(e) => setForm((f) => ({ ...f, question: e.target.value }))}
+                  placeholder="Como faço para encomendar?"
+                  className="w-full border border-stone-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-transparent"
+                />
               </div>
 
               <div>
                 <label className="block text-xs font-medium text-stone-600 mb-1.5">
-                  Testemunho <span className="text-red-400">*</span>
+                  Resposta <span className="text-red-400">*</span>
                 </label>
                 <textarea
                   required
-                  rows={3}
-                  value={form.quote}
-                  onChange={(e) => setForm((f) => ({ ...f, quote: e.target.value }))}
-                  placeholder="Melhor cheesecake que já comi em Maputo!"
+                  rows={4}
+                  value={form.answer}
+                  onChange={(e) => setForm((f) => ({ ...f, answer: e.target.value }))}
+                  placeholder="Pode encomendar online no nosso site..."
                   className="w-full border border-stone-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-transparent resize-none"
                 />
               </div>
 
               <div className="flex items-center gap-8">
-                <div>
-                  <label className="block text-xs font-medium text-stone-600 mb-1.5">Avaliação</label>
-                  <StarPicker value={form.rating} onChange={(v) => setForm((f) => ({ ...f, rating: v }))} />
-                </div>
                 <div>
                   <label className="block text-xs font-medium text-stone-600 mb-1.5">Ordem</label>
                   <input
@@ -240,7 +195,7 @@ function TestimonialsPage() {
                       )}
                     />
                   </button>
-                  <span className="text-xs text-stone-600">Ativo</span>
+                  <span className="text-xs text-stone-600">Ativa</span>
                 </div>
               </div>
 
@@ -274,7 +229,7 @@ function TestimonialsPage() {
       {deleteId !== null && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 text-center">
-            <p className="font-semibold text-stone-900 mb-2">Eliminar testemunho?</p>
+            <p className="font-semibold text-stone-900 mb-2">Eliminar pergunta?</p>
             <p className="text-sm text-stone-500 mb-5">Esta ação não pode ser desfeita.</p>
             <div className="flex justify-center gap-3">
               <button
@@ -301,58 +256,46 @@ function TestimonialsPage() {
           <div className="divide-y divide-stone-100">
             {Array.from({ length: 3 }).map((_, i) => (
               <div key={i} className="px-6 py-4 space-y-2">
-                <div className="h-3 w-32 bg-stone-100 rounded animate-pulse" />
+                <div className="h-3 w-48 bg-stone-100 rounded animate-pulse" />
                 <div className="h-4 w-full bg-stone-100 rounded animate-pulse" />
               </div>
             ))}
           </div>
-        ) : testimonials.length === 0 ? (
+        ) : faqs.length === 0 ? (
           <div className="py-16 text-center">
-            <p className="text-stone-400 text-sm">Nenhum testemunho ainda.</p>
+            <p className="text-stone-400 text-sm">Nenhuma FAQ ainda.</p>
             <button
               onClick={openCreate}
               className="mt-3 text-primary-500 hover:text-primary-600 text-sm font-medium transition-colors"
             >
-              Criar o primeiro
+              Criar a primeira
             </button>
           </div>
         ) : (
           <div className="divide-y divide-stone-100">
-            {testimonials.map((t) => (
-              <div key={t.id} className="px-6 py-4 flex gap-4 items-start">
+            {faqs.map((f) => (
+              <div key={f.id} className="px-6 py-4 flex gap-4 items-start">
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-3 mb-1 flex-wrap">
-                    <div className="flex gap-0.5">
-                      {Array.from({ length: 5 }).map((_, i) => (
-                        <Star
-                          key={i}
-                          size={11}
-                          className={cn(i < t.rating ? 'fill-amber-400 text-amber-400' : 'fill-stone-200 text-stone-200')}
-                        />
-                      ))}
-                    </div>
-                    <span className="text-sm font-semibold text-stone-800">{t.author_name}</span>
-                    {t.author_detail && (
-                      <span className="text-xs text-stone-400">{t.author_detail}</span>
-                    )}
-                    <span className="text-[10px] text-stone-300">#{t.sort_order}</span>
+                  <div className="flex items-center gap-2 mb-1 flex-wrap">
+                    <span className="text-sm font-semibold text-stone-800">{f.question}</span>
+                    <span className="text-[10px] text-stone-300">#{f.sort_order}</span>
                   </div>
-                  <p className="text-sm text-stone-600 line-clamp-2">"{t.quote}"</p>
+                  <p className="text-sm text-stone-500 line-clamp-2">{f.answer}</p>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
                   <ToggleSwitch
-                    checked={t.is_active}
-                    onChange={() => toggleMutation.mutate({ id: t.id, is_active: !t.is_active })}
+                    checked={f.is_active}
+                    onChange={() => toggleMutation.mutate({ id: f.id, is_active: !f.is_active })}
                     disabled={toggleMutation.isPending}
                   />
                   <button
-                    onClick={() => openEdit(t)}
+                    onClick={() => openEdit(f)}
                     className="w-7 h-7 rounded-lg flex items-center justify-center text-stone-400 hover:text-stone-600 hover:bg-stone-100 transition-colors"
                   >
                     <Pencil size={13} />
                   </button>
                   <button
-                    onClick={() => setDeleteId(t.id)}
+                    onClick={() => setDeleteId(f.id)}
                     className="w-7 h-7 rounded-lg flex items-center justify-center text-stone-400 hover:text-red-500 hover:bg-red-50 transition-colors"
                   >
                     <Trash2 size={13} />

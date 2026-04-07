@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Plus, Tag, ToggleLeft, ToggleRight, Pencil, Trash2, X, Loader2, Search } from 'lucide-react'
+import { Plus, Tag, Pencil, Trash2, X, Loader2, Search } from 'lucide-react'
+import { ToggleSwitch, Toggle } from '~/components/admin/Toggle'
 import { api } from '~/lib/api'
 import { cn } from '~/lib/utils'
 
@@ -239,18 +240,11 @@ function AdminCouponsPage() {
                       )}
                     </td>
                     <td className="px-4 py-3">
-                      <button
-                        onClick={() => toggleMutation.mutate(c.id)}
+                      <ToggleSwitch
+                        checked={c.is_active}
+                        onChange={() => toggleMutation.mutate(c.id)}
                         disabled={toggleMutation.isPending}
-                        className="transition-colors"
-                        title={c.is_active ? 'Deactivate' : 'Activate'}
-                      >
-                        {c.is_active ? (
-                          <ToggleRight size={22} className="text-green-500" />
-                        ) : (
-                          <ToggleLeft size={22} className="text-stone-300" />
-                        )}
-                      </button>
+                      />
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-end gap-1">
@@ -554,40 +548,3 @@ function ModalField({ label, error, children }: { label: string; error?: string;
   )
 }
 
-function Toggle({
-  label,
-  description,
-  checked,
-  onChange,
-}: {
-  label: string
-  description?: string
-  checked: boolean
-  onChange: (v: boolean) => void
-}) {
-  return (
-    <button
-      type="button"
-      onClick={() => onChange(!checked)}
-      className="w-full flex items-center justify-between gap-3 text-left"
-    >
-      <div>
-        <p className="text-sm font-medium text-stone-700">{label}</p>
-        {description && <p className="text-xs text-stone-400 mt-0.5">{description}</p>}
-      </div>
-      <div
-        className={cn(
-          'relative flex-shrink-0 w-9 h-5 rounded-full transition-colors',
-          checked ? 'bg-green-500' : 'bg-stone-200',
-        )}
-      >
-        <span
-          className={cn(
-            'absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform',
-            checked && 'translate-x-4',
-          )}
-        />
-      </div>
-    </button>
-  )
-}

@@ -1,5 +1,5 @@
 import { createFileRoute, Outlet, Link, useNavigate, redirect, useRouterState } from '@tanstack/react-router'
-import { LayoutDashboard, ClipboardList, Package, LogOut, CakeSlice, Settings, Tag, Star, MapPin, Layers, CalendarX2, Ticket, MessageSquareQuote, BarChart2, BookOpen, FileText } from 'lucide-react'
+import { LayoutDashboard, ClipboardList, Package, LogOut, CakeSlice, Settings, Tag, Star, MapPin, Layers, CalendarX2, Ticket, MessageSquareQuote, BarChart2, BookOpen, FileText, HelpCircle } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import { useAuthStore } from '~/store/auth'
 import { adminLogout, getSettings } from '~/lib/adminApi'
@@ -43,6 +43,7 @@ function AdminLayout() {
         { to: '/admin/orders', label: 'Encomendas', icon: ClipboardList },
         { to: '/admin/reviews', label: 'Avaliações', icon: Star },
         { to: '/admin/testimonials', label: 'Testemunhos', icon: MessageSquareQuote },
+        { to: '/admin/faqs', label: 'FAQs', icon: HelpCircle },
         { to: '/admin/blog', label: 'Blog', icon: BookOpen },
       ],
     },

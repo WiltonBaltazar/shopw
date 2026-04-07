@@ -21,25 +21,51 @@ export interface SeoSettings {
   whatsapp_number: string | null
   pay_on_delivery_enabled: boolean
   theme_primary_color?: string | null
+  social_instagram: string | null
+  social_tiktok: string | null
+  social_facebook: string | null
+  social_twitter: string | null
+  social_youtube: string | null
+  social_linkedin: string | null
+  social_whatsapp: string | null
+  store_currency: string | null
+  store_phone: string | null
+  store_address: string | null
+  store_city: string | null
+  store_country: string | null
+  store_business_type: string | null
 }
 
 const SEO_DEFAULTS: SeoSettings = {
-  seo_site_name: 'Cheesemania',
-  seo_home_title: 'Cheesemania — Cheesecakes Homemade em Maputo',
-  seo_home_description: 'Cheesecakes Homemade feitos com amor em Maputo, Moçambique. Encomende online e receba na sua porta. Opções sem lactose e fitness disponíveis.',
-  seo_menu_title: 'Menu de Cheesecakes — Cheesemania Maputo',
-  seo_menu_description: 'Explore o nosso menu de cheesecakes Homemade em Maputo. Sem lactose, fitness e sabores clássicos. Entrega ao domicílio em Maputo e Matola.',
+  seo_site_name: '',
+  seo_home_title: '',
+  seo_home_description: '',
+  seo_menu_title: '',
+  seo_menu_description: '',
   seo_og_image: null,
   favicon_url: null,
   brand_logo_url: null,
   footer_logo_url: null,
-  hero_tagline: 'Homemade · Maputo',
-  hero_heading: 'More Cheese,\nMore Joy',
-  hero_subheading: 'Cheesecakes Homemade feitos com amor, prontos para a sua celebração especial.',
-  hero_cta_text: 'Ver o Menu',
+  hero_tagline: null,
+  hero_heading: null,
+  hero_subheading: null,
+  hero_cta_text: null,
   hero_image_url: null,
   whatsapp_number: null,
   pay_on_delivery_enabled: false,
+  social_instagram: null,
+  social_tiktok: null,
+  social_facebook: null,
+  social_twitter: null,
+  social_youtube: null,
+  social_linkedin: null,
+  social_whatsapp: null,
+  store_currency: null,
+  store_phone: null,
+  store_address: null,
+  store_city: null,
+  store_country: null,
+  store_business_type: null,
 }
 
 export function useThemeColor(): string | null {

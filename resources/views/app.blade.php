@@ -1,20 +1,20 @@
 <!DOCTYPE html>
-<html lang="pt-MZ">
+<html lang="{{ config('app.locale', 'en') }}">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="csrf-token" content="{{ csrf_token() }}" />
 
     {{-- Default title & description (overridden per-page by react-helmet-async) --}}
-    <title>{{ \App\Models\Setting::get('seo_home_title', 'Cheesemania — Cheesecakes Homemade em Maputo') }}</title>
-    <meta name="description" content="{{ \App\Models\Setting::get('seo_home_description', 'Cheesecakes Homemade feitos com amor em Maputo, Moçambique. Encomende online e receba na sua porta.') }}" />
+    <title>{{ \App\Models\Setting::get('seo_home_title', config('app.name')) }}</title>
+    <meta name="description" content="{{ \App\Models\Setting::get('seo_home_description', '') }}" />
 
     {{-- Default Open Graph (overridden per-page by react-helmet-async) --}}
     <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="{{ \App\Models\Setting::get('seo_site_name', 'Cheesemania') }}" />
-    <meta property="og:locale" content="pt_MZ" />
-    <meta property="og:title" content="{{ \App\Models\Setting::get('seo_home_title', 'Cheesemania — Cheesecakes Homemade em Maputo') }}" />
-    <meta property="og:description" content="{{ \App\Models\Setting::get('seo_home_description', 'Cheesecakes Homemade feitos com amor em Maputo, Moçambique.') }}" />
+    <meta property="og:site_name" content="{{ \App\Models\Setting::get('seo_site_name', config('app.name')) }}" />
+    <meta property="og:locale" content="{{ config('app.locale', 'en') }}" />
+    <meta property="og:title" content="{{ \App\Models\Setting::get('seo_home_title', config('app.name')) }}" />
+    <meta property="og:description" content="{{ \App\Models\Setting::get('seo_home_description', '') }}" />
     @if(\App\Models\Setting::get('seo_og_image'))
     <meta property="og:image" content="{{ \App\Models\Setting::get('seo_og_image') }}" />
     @endif
@@ -27,78 +27,70 @@
 
     {{-- LocalBusiness structured data --}}
     @php
-    $phone = '+' . \App\Models\Setting::get('whatsapp_number', '258840000000');
-    $siteUrl = config('app.url');
-    $localBusiness = json_encode([
-        '@context'           => 'https://schema.org',
-        '@type'              => ['Bakery', 'FoodEstablishment'],
-        'name'               => \App\Models\Setting::get('seo_site_name', 'Cheesemania'),
-        'description'        => 'Cheesecakes Homemade feitos à mão em Maputo, Moçambique. Entrega ao domicílio em Maputo e Matola.',
-        'url'                => $siteUrl,
-        'telephone'          => $phone,
-        'address'            => [
-            '@type'           => 'PostalAddress',
-            'addressLocality' => 'Maputo',
-            'addressRegion'   => 'Maputo',
-            'addressCountry'  => 'MZ',
-        ],
-        'geo'                => [
-            '@type'     => 'GeoCoordinates',
-            'latitude'  => -25.9692,
-            'longitude' => 32.5732,
-        ],
-        'areaServed'         => [
-            ['@type' => 'City', 'name' => 'Maputo'],
-            ['@type' => 'City', 'name' => 'Matola'],
-        ],
-        'servesCuisine'      => ['Cheesecake', 'Pastelaria Homemade'],
-        'priceRange'         => '$$',
-        'paymentAccepted'    => 'M-Pesa, Cash',
-        'currenciesAccepted' => 'MZN',
-        'hasDeliveryMethod'  => 'http://purl.org/goodrelations/v1#UPS',
-        'potentialAction'    => [
+    $s            = \App\Models\Setting::class;
+    $siteName     = $s::get('seo_site_name', config('app.name'));
+    $description  = $s::get('seo_home_description', '');
+    $siteUrl      = config('app.url');
+    $businessType = $s::get('store_business_type', 'LocalBusiness');
+    $storePhone   = $s::get('store_phone', '');
+    $whatsapp     = $s::get('whatsapp_number', '');
+    $phone        = $storePhone ?: ($whatsapp ? '+' . $whatsapp : '');
+    $address      = $s::get('store_address', '');
+    $city         = $s::get('store_city', '');
+    $country      = $s::get('store_country', '');
+    $currency     = $s::get('store_currency', 'USD');
+    $instagram    = $s::get('social_instagram');
+
+    $localBusinessData = [
+        '@context'        => 'https://schema.org',
+        '@type'           => $businessType,
+        'name'            => $siteName,
+        'url'             => $siteUrl,
+        'potentialAction' => [
             '@type'  => 'OrderAction',
             'target' => $siteUrl . '/menu',
         ],
-        'sameAs'             => ['https://instagram.com/cheesemaniaa'],
-    ]);
+    ];
+
+    if ($description) $localBusinessData['description'] = $description;
+    if ($phone) $localBusinessData['telephone'] = $phone;
+    if ($currency) $localBusinessData['currenciesAccepted'] = $currency;
+    if ($instagram) $localBusinessData['sameAs'] = [$instagram];
+
+    if ($city || $country || $address) {
+        $postalAddress = ['@type' => 'PostalAddress'];
+        if ($address) $postalAddress['streetAddress'] = $address;
+        if ($city) $postalAddress['addressLocality'] = $city;
+        if ($country) $postalAddress['addressCountry'] = $country;
+        $localBusinessData['address'] = $postalAddress;
+    }
+
+    $localBusiness = json_encode($localBusinessData);
     @endphp
     <script type="application/ld+json">{!! $localBusiness !!}</script>
 
     {{-- hreflang --}}
-    <link rel="alternate" hreflang="pt-MZ" href="{{ $siteUrl }}" />
+    <link rel="alternate" hreflang="{{ config('app.locale', 'en') }}" href="{{ $siteUrl }}" />
     <link rel="alternate" hreflang="x-default" href="{{ $siteUrl }}" />
 
-    {{-- FAQ structured data (local Q&A for homepage) --}}
+    {{-- FAQ structured data (from database) --}}
+    @php
+    $faqItems = \App\Models\Faq::active()->orderBy('sort_order')->orderBy('id')->get(['question', 'answer']);
+    @endphp
+    @if($faqItems->isNotEmpty())
     @php
     $faq = json_encode([
         '@context'   => 'https://schema.org',
         '@type'      => 'FAQPage',
-        'mainEntity' => [
-            [
-                '@type'          => 'Question',
-                'name'           => 'Fazem entrega de cheesecake em Maputo?',
-                'acceptedAnswer' => ['@type' => 'Answer', 'text' => 'Sim, entregamos cheesecakes Homemade em toda a cidade de Maputo e Matola. As encomendas devem ser feitas com pelo menos 24 horas de antecedência.'],
-            ],
-            [
-                '@type'          => 'Question',
-                'name'           => 'Como encomendar cheesecake em Maputo?',
-                'acceptedAnswer' => ['@type' => 'Answer', 'text' => 'Pode encomendar online em ' . $siteUrl . '/menu, escolher o seu cheesecake favorito e finalizar a encomenda. Aceitamos pagamento via M-Pesa.'],
-            ],
-            [
-                '@type'          => 'Question',
-                'name'           => 'Têm cheesecakes sem lactose em Maputo?',
-                'acceptedAnswer' => ['@type' => 'Answer', 'text' => 'Sim, temos cheesecakes sem lactose e opções fitness disponíveis. Todos os nossos produtos são feitos à mão em Maputo.'],
-            ],
-            [
-                '@type'          => 'Question',
-                'name'           => 'Aceitam pagamento via M-Pesa?',
-                'acceptedAnswer' => ['@type' => 'Answer', 'text' => 'Sim, aceitamos pagamento via M-Pesa e dinheiro na entrega.'],
-            ],
-        ],
+        'mainEntity' => $faqItems->map(fn($f) => [
+            '@type'          => 'Question',
+            'name'           => $f->question,
+            'acceptedAnswer' => ['@type' => 'Answer', 'text' => $f->answer],
+        ])->values()->all(),
     ]);
     @endphp
     <script type="application/ld+json">{!! $faq !!}</script>
+    @endif
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -111,8 +103,7 @@
 <body>
     <div id="root"></div>
     <noscript>
-        <p>Cheesemania — Cheesecakes Homemade feitos com amor em Maputo, Moçambique.
-        Encomende online em <a href="{{ config('app.url') }}">{{ config('app.url') }}</a>.</p>
+        <p>{{ config('app.name') }} — <a href="{{ config('app.url') }}">{{ config('app.url') }}</a></p>
     </noscript>
 </body>
 </html>
