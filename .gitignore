@@ -26,3 +26,4 @@ Thumbs.db
 /public/build
 !public/build/
 !public/build/**
+supervisord.pid
