@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
-import { ShoppingBag, ChevronRight, Leaf, Dumbbell, Heart, Check } from 'lucide-react'
+import { ShoppingBag, ChevronRight, Leaf, Dumbbell, Heart, Check, Star } from 'lucide-react'
 import type { ProductListItem, CustomerFavorite } from '~/lib/types'
 import { formatPrice } from '~/lib/utils'
 import { useCartStore } from '~/store/cart'
@@ -133,11 +133,22 @@ export function ProductCard({ product, favorites }: Props) {
         <h3 className="font-serif font-semibold text-stone-800 text-[15px] md:text-base leading-snug group-hover:text-primary-600 transition-colors">
           {product.name}
         </h3>
-        <p className="text-sm text-stone-500 mt-1 tabular-nums">
-          {product.price_range.min === product.price_range.max
-            ? formatPrice(product.price_range.min)
-            : `A partir de ${formatPrice(product.price_range.min)}`}
-        </p>
+        <div className="flex items-center justify-between mt-1 gap-2">
+          <p className="text-sm text-stone-500 tabular-nums">
+            {product.price_range.min === product.price_range.max
+              ? formatPrice(product.price_range.min)
+              : `A partir de ${formatPrice(product.price_range.min)}`}
+          </p>
+          {product.average_rating != null && product.reviews_count > 0 && (
+            <span className="flex items-center gap-0.5 shrink-0">
+              <Star size={11} className="fill-amber-400 text-amber-400" />
+              <span className="text-[11px] text-stone-500 tabular-nums">
+                {product.average_rating.toFixed(1)}
+                <span className="text-stone-300 ml-0.5">({product.reviews_count})</span>
+              </span>
+            </span>
+          )}
+        </div>
       </div>
     </Link>
   )

@@ -273,6 +273,23 @@ export function useBlogPosts() {
   })
 }
 
+export interface Faq {
+  id: number
+  question: string
+  answer: string
+}
+
+export function useFaqs() {
+  return useQuery<Faq[]>({
+    queryKey: ['faqs'],
+    queryFn: async () => {
+      const { data } = await api.get('/faqs')
+      return data.data
+    },
+    staleTime: 5 * 60 * 1000,
+  })
+}
+
 export function useBlogPost(slug: string) {
   return useQuery<BlogPost>({
     queryKey: ['blog-posts', slug],

@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { Helmet } from 'react-helmet-async'
-import { useProducts, useSeoSettings, useTestimonials, useBlogPosts } from '~/lib/hooks'
+import { useProducts, useSeoSettings, useTestimonials, useBlogPosts, useFaqs } from '~/lib/hooks'
 import { ProductCard } from '~/components/ui/ProductCard'
 import { ArrowRight, Star, MapPin, ChevronRight, ChevronDown, ChevronLeft, Calendar } from 'lucide-react'
 
@@ -9,24 +9,6 @@ export const Route = createFileRoute('/_public/')({
   component: HomePage,
 })
 
-const FAQS = [
-  {
-    q: 'Fazem entrega de cheesecake em Maputo?',
-    a: 'Sim, entregamos cheesecakes Homemade em toda a cidade de Maputo e Matola. As encomendas devem ser feitas com pelo menos 24 horas de antecedência.',
-  },
-  {
-    q: 'Como encomendar cheesecake em Maputo?',
-    a: 'Basta navegar ao nosso menu, escolher o seu cheesecake favorito, personalizar ao seu gosto e finalizar a encomenda online. Aceitamos pagamento via M-Pesa.',
-  },
-  {
-    q: 'Têm cheesecakes sem lactose em Maputo?',
-    a: 'Sim! Temos cheesecakes sem lactose e opções fitness disponíveis. Todos os nossos produtos são feitos à mão em Maputo com ingredientes frescos.',
-  },
-  {
-    q: 'Aceitam pagamento via M-Pesa?',
-    a: 'Sim, aceitamos pagamento via M-Pesa e dinheiro na entrega. O pagamento é confirmado antes da preparação da encomenda.',
-  },
-]
 
 function TestimonialsSection() {
   const { data: testimonials = [], isLoading } = useTestimonials()
@@ -244,6 +226,7 @@ function BlogPreviewSection() {
 function HomePage() {
   const { data: products, isLoading } = useProducts()
   const seo = useSeoSettings()
+  const { data: faqs = [] } = useFaqs()
   const [openFaq, setOpenFaq] = useState<number | null>(null)
 
   return (
@@ -534,11 +517,11 @@ function HomePage() {
             Perguntas frequentes
           </h2>
           <div className="space-y-3">
-            {FAQS.map(({ q, a }, i) => {
+            {faqs.map((faq, i) => {
               const open = openFaq === i
               return (
                 <div
-                  key={i}
+                  key={faq.id}
                   className={`rounded-2xl border transition-colors overflow-hidden ${open ? 'border-primary-200 bg-primary-50/60' : 'border-stone-100 bg-white'}`}
                 >
                   <button
@@ -547,7 +530,7 @@ function HomePage() {
                     aria-expanded={open}
                   >
                     <span className={`font-semibold text-[14px] leading-snug transition-colors ${open ? 'text-primary-700' : 'text-stone-800'}`}>
-                      {q}
+                      {faq.question}
                     </span>
                     <ChevronDown
                       size={16}
@@ -559,7 +542,7 @@ function HomePage() {
                     style={{ maxHeight: open ? '200px' : '0px' }}
                   >
                     <p className="px-5 pb-5 text-sm text-stone-500 leading-relaxed">
-                      {a}
+                      {faq.answer}
                     </p>
                   </div>
                 </div>
@@ -577,19 +560,30 @@ function HomePage() {
             Pronto(a) a encantar na sua próxima celebração?
           </h2>
           <p className="text-stone-400 text-sm mb-2 leading-relaxed">
-            Explore o menu e faça a sua encomenda.
+            Encomende hoje. Entregamos amanhã em Maputo e Matola.
           </p>
           <p className="text-stone-400 text-xs mb-7">
             Entrega em Maputo · Pagamento via M-Pesa · 24h de antecedência
           </p>
           <Link
-            to="/encomenda-evento"
+            to="/menu"
             className="inline-flex items-center gap-2 bg-primary-500 hover:bg-primary-600 active:scale-[0.97] text-white font-semibold px-8 py-4 rounded-full transition-all text-sm shadow-lg"
             style={{ boxShadow: '0 8px 24px #685D9438' }}
           >
-            Fazer a minha encomenda
+            Escolher o meu cheesecake
             <ArrowRight size={15} />
           </Link>
+          <p className="mt-5 text-xs text-stone-400">
+            Tem dúvidas?{' '}
+            <a
+              href={`https://wa.me/${seo.whatsapp_number ?? seo.social_whatsapp ?? ''}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary-500 hover:underline font-medium"
+            >
+              Fale connosco no WhatsApp
+            </a>
+          </p>
         </div>
       </section>
     </>
