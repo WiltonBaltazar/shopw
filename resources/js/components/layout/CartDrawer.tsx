@@ -105,12 +105,13 @@ export function CartDrawer({ open, onClose }: Props) {
                   <p className="text-sm font-medium text-stone-600">O carrinho está vazio</p>
                   <p className="text-xs text-stone-400 mt-1">Adicione cheesecakes para começar</p>
                 </div>
-                <button
+                <Link
+                  to="/menu"
                   onClick={onClose}
                   className="text-sm font-medium text-white bg-primary-500 hover:bg-primary-400 px-5 py-2.5 rounded-xl transition-colors"
                 >
-                  Ver o menu
-                </button>
+                  Ver Menu
+                </Link>
               </div>
             ) : (
               items.map((item) => (
