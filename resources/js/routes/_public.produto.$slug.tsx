@@ -254,6 +254,24 @@ function ProductPage() {
 
   const flavoursFilled = flavourCount === 0 || flavourSelections.length === flavourCount
 
+  // Which variant attribute hasn't been selected yet?
+  const firstMissingAttrName = useMemo(() => {
+    if (!product || product.product_type === 'simple') return null
+    const missing = product.attributes
+      .filter((a) => variantAttrIds.has(a.id) && a.name !== 'Sabor')
+      .find((a) => selectedValues[a.id] == null)
+    if (missing) return missing.name
+    if (saborAttr && flavourCount > 0 && !flavoursFilled) return 'Sabor'
+    return null
+  }, [product, variantAttrIds, selectedValues, saborAttr, flavourCount, flavoursFilled])
+
+  // Earliest possible delivery date (always tomorrow)
+  const earliestDelivery = useMemo(() => {
+    const candidate = new Date()
+    candidate.setDate(candidate.getDate() + 1)
+    return candidate.toLocaleDateString('pt-MZ', { weekday: 'long', day: 'numeric', month: 'long' })
+  }, [])
+
   function handleAddToCart() {
     if (!product || !matchedVariant) return
 
@@ -306,7 +324,8 @@ function ProductPage() {
   const canAddToCart =
     matchedVariant !== null &&
     matchedVariant.is_available &&
-    flavoursFilled
+    flavoursFilled &&
+    firstMissingAttrName === null
 
   const productTitle = product.seo_title ?? `${product.name} — ${seo.seo_site_name}`
   const productDescription = product.seo_description
@@ -521,7 +540,9 @@ function ProductPage() {
           {product.requires_advance_order && (
             <div className="flex items-center gap-2 text-xs text-primary-700 bg-primary-50 border border-primary-100 rounded-lg px-3 py-2 mb-6">
               <Clock size={14} />
-              Encomenda com pelo menos 24h de antecedência.
+              <span>
+                Encomende agora · <span className="font-semibold">Receba a partir de {earliestDelivery}</span>
+              </span>
             </div>
           )}
 
@@ -636,7 +657,13 @@ function ProductPage() {
               )}
             >
               <ShoppingCart size={16} />
-              {added ? 'Adicionado!' : canAddToCart ? 'Adicionar ao Carrinho' : 'Selecione as opções'}
+              {added
+                ? 'Adicionado!'
+                : canAddToCart
+                ? 'Adicionar ao Carrinho'
+                : firstMissingAttrName
+                ? `Selecione ${firstMissingAttrName === 'Sabor' ? 'os sabores' : `o ${firstMissingAttrName.toLowerCase()}`}`
+                : 'Selecione as opções'}
             </button>
           </div>
 
@@ -704,6 +731,8 @@ function ProductPage() {
               ? 'Adicionado!'
               : canAddToCart
               ? `Adicionar · ${formatPrice(priceToShow * quantity)}`
+              : firstMissingAttrName
+              ? `Selecione ${firstMissingAttrName === 'Sabor' ? 'os sabores' : `o ${firstMissingAttrName.toLowerCase()}`}`
               : 'Selecione as opções'}
           </button>
         </div>

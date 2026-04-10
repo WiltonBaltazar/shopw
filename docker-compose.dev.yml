@@ -1,0 +1,59 @@
+services:
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    env_file: .env.development
+    environment:
+      APP_ENV: local
+      APP_DEBUG: "true"
+      DB_HOST: db
+      DB_PORT: 3306
+      MAIL_MAILER: smtp
+      MAIL_HOST: mailpit
+      MAIL_PORT: 1025
+      VITE_DEV_SERVER_URL: "http://localhost:5173"
+    volumes:
+      # Mount source so changes are reflected without rebuilding
+      - .:/var/www/html
+      # But keep vendor/storage from container
+      - /var/www/html/vendor
+      - /var/www/html/node_modules
+      - app_storage:/var/www/html/storage/app
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - shopw
+
+  vite:
+    image: node:22-alpine
+    working_dir: /app
+    command: sh -c "npm ci && npm run dev -- --host"
+    ports:
+      - "5173:5173"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      NODE_ENV: development
+    networks:
+      - shopw
+
+  mailpit:
+    image: axllent/mailpit:latest
+    restart: unless-stopped
+    ports:
+      - "8025:8025"   # Web UI
+      - "1025:1025"   # SMTP
+    networks:
+      - shopw
+
+  db:
+    ports:
+      - "3307:3306"   # Exposed so you can connect from host (TablePlus etc.)
