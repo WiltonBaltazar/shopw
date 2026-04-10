@@ -11,8 +11,8 @@ services:
       dockerfile: Dockerfile
       target: production
     restart: unless-stopped
-    ports:
-      - "8081:8080"
+    expose:
+      - "8080"
     environment:
       APP_NAME: "My Store [Staging]"
       APP_ENV: staging
@@ -41,6 +41,7 @@ services:
         condition: service_healthy
     networks:
       - shopw
+      - coolify
 
   db:
     image: mysql:8.0
@@ -67,3 +68,5 @@ volumes:
 networks:
   shopw:
     driver: bridge
+  coolify:
+    external: true
