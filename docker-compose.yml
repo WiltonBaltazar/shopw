@@ -1,0 +1,31 @@
+# Base – shared service definitions
+# Do NOT use this file directly. Use environment-specific overrides:
+#   make dev | make staging | make prod
+
+services:
+
+  db:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: "${DB_DATABASE:-my_store}"
+      MYSQL_USER: "${DB_USERNAME:-shopw}"
+      MYSQL_PASSWORD: "${DB_PASSWORD}"
+      MYSQL_ROOT_PASSWORD: "${DB_ROOT_PASSWORD}"
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - shopw
+
+volumes:
+  db_data:
+  app_storage:
+
+networks:
+  shopw:
+    driver: bridge

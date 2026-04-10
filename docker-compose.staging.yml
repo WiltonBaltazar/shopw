@@ -1,0 +1,27 @@
+services:
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    restart: unless-stopped
+    ports:
+      - "8081:8080"   # Coolify proxies staging domain → 8081
+    env_file: .env.staging
+    environment:
+      APP_ENV: staging
+      APP_DEBUG: "true"   # Visible errors on staging is fine
+      DB_HOST: db
+      DB_PORT: 3306
+    volumes:
+      - app_storage:/var/www/html/storage/app
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - shopw
+
+  db:
+    ports:
+      - "3308:3306"   # Separate port so staging DB doesn't clash with dev
