@@ -34,6 +34,8 @@ services:
       MAIL_FROM_NAME: "My Store [Staging]"
       LOG_CHANNEL: stderr
       LOG_LEVEL: debug
+    labels:
+      - "traefik.http.services.app.loadbalancer.server.port=8080"
     volumes:
       - app_storage:/var/www/html/storage/app
     depends_on:
