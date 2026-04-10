@@ -76,9 +76,6 @@ export function Footer() {
                 <span className="font-serif text-3xl font-bold tracking-tight">{siteName}</span>
               ) : null}
             </Link>
-            {seo.hero_tagline && (
-              <p className="mt-2 text-sm text-white/75">{seo.hero_tagline}</p>
-            )}
 
             {socialLinks.length > 0 && (
               <div className="mt-8 flex items-center flex-wrap gap-3">
@@ -99,9 +96,9 @@ export function Footer() {
           </div>
 
           <div>
-            <h3 className="text-2xl/none font-medium">Links úteis</h3>
+            <h3 className="text-xl/none font-medium">Links úteis</h3>
             <div className="mt-3 h-px bg-white/35" />
-            <nav className="mt-6 flex flex-col gap-3 text-[15px] font-medium uppercase tracking-wide">
+            <nav className="mt-6 flex flex-col gap-3 text-[15px] font-medium tracking-wide">
               {fv('home') && <Link to="/" className="hover:text-white/80 transition-colors">Página inicial</Link>}
               {fv('blog') && <Link to="/blog" className="hover:text-white/80 transition-colors">Blog</Link>}
               {fv('shop') && <Link to="/menu" className="hover:text-white/80 transition-colors">Loja</Link>}
@@ -111,9 +108,9 @@ export function Footer() {
           </div>
 
           <div>
-            <h3 className="text-2xl/none font-medium">Políticas</h3>
+            <h3 className="text-xl/none font-medium">Políticas</h3>
             <div className="mt-3 h-px bg-white/35" />
-            <nav className="mt-6 flex flex-col gap-3 text-[15px] font-medium uppercase tracking-wide">
+            <nav className="mt-6 flex flex-col gap-3 text-[15px] font-medium tracking-wide">
               {fv('privacy') && (
                 <Link to="/politica-de-privacidade" className="hover:text-white/80 transition-colors">
                   Políticas de Privacidade
