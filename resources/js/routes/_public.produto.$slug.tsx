@@ -254,16 +254,16 @@ function ProductPage() {
 
   const flavoursFilled = flavourCount === 0 || flavourSelections.length === flavourCount
 
-  // Which variant attribute hasn't been selected yet?
+  // Which attribute hasn't been selected yet? Checks all shown attributes, not just variant-driving ones.
   const firstMissingAttrName = useMemo(() => {
     if (!product || product.product_type === 'simple') return null
     const missing = product.attributes
-      .filter((a) => variantAttrIds.has(a.id) && a.name !== 'Sabor')
+      .filter((a) => a.name !== 'Sabor')
       .find((a) => selectedValues[a.id] == null)
     if (missing) return missing.name
     if (saborAttr && flavourCount > 0 && !flavoursFilled) return 'Sabor'
     return null
-  }, [product, variantAttrIds, selectedValues, saborAttr, flavourCount, flavoursFilled])
+  }, [product, selectedValues, saborAttr, flavourCount, flavoursFilled])
 
   // Earliest possible delivery date (always tomorrow)
   const earliestDelivery = useMemo(() => {
