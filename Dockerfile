@@ -104,6 +104,9 @@ RUN chown -R www-data:www-data storage bootstrap/cache \
 
 EXPOSE 8080
 
+HEALTHCHECK --interval=10s --timeout=5s --start-period=30s --retries=3 \
+    CMD wget -qO- http://127.0.0.1:8080/up || exit 1
+
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
 
@@ -122,6 +125,9 @@ RUN chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
 EXPOSE 8080
+
+HEALTHCHECK --interval=10s --timeout=5s --start-period=30s --retries=3 \
+    CMD wget -qO- http://127.0.0.1:8080/up || exit 1
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
