@@ -34,6 +34,8 @@ export interface SeoSettings {
   store_city: string | null
   store_country: string | null
   store_business_type: string | null
+  nav_links: Record<string, boolean> | null
+  footer_links: Record<string, boolean> | null
 }
 
 const SEO_DEFAULTS: SeoSettings = {
@@ -66,6 +68,8 @@ const SEO_DEFAULTS: SeoSettings = {
   store_city: null,
   store_country: null,
   store_business_type: null,
+  nav_links: null,
+  footer_links: null,
 }
 
 export function useThemeColor(): string | null {

@@ -61,6 +61,8 @@ Route::get('/settings', function () {
         'store_city'           => $s::get('store_city', ''),
         'store_country'        => $s::get('store_country', ''),
         'store_business_type'  => $s::get('store_business_type', 'LocalBusiness'),
+        'nav_links'            => json_decode($s::get('nav_links', 'null'), true),
+        'footer_links'         => json_decode($s::get('footer_links', 'null'), true),
     ]]);
 });
 Route::get('/blocked-dates', function () {

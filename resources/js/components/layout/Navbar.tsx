@@ -13,8 +13,8 @@ export function Navbar() {
   const settings = useSeoSettings()
   const [bump, setBump] = useState(false)
   const prevCount = useRef(itemCount)
-   const seo = useSeoSettings()
-  const whatsapp = seo.whatsapp_number
+  const whatsapp = settings.whatsapp_number
+  const navVisible = (key: string) => settings.nav_links?.[key] !== false
 
   // Animate cart icon when item count increases
   useEffect(() => {
@@ -49,29 +49,41 @@ export function Navbar() {
 
           {/* Desktop nav */}
           <nav className="hidden md:flex items-center gap-8">
-            <Link to="/" className="text-sm text-stone-600 hover:text-stone-900 transition-colors">
-              Início
-            </Link>
-            <Link to="/menu" className="text-sm text-stone-600 hover:text-stone-900 transition-colors">
-              Loja
-            </Link>
-            <Link to="/blog" className="text-sm text-stone-600 hover:text-stone-900 transition-colors">
-              Blog
-            </Link>
-            <Link to="/minhas-encomendas" className="text-sm text-stone-600 hover:text-stone-900 transition-colors">
-              Minhas encomendas
-            </Link>
-            <Link to="/encomenda-evento" className="text-sm text-stone-600 hover:text-stone-900 transition-colors">
-              Eventos
-            </Link>
-            <a
-              href={`https://wa.me/${whatsapp}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm text-stone-600 hover:text-stone-900 transition-colors"
-            >
-              Contacto
-            </a>
+            {navVisible('home') && (
+              <Link to="/" className="text-sm text-stone-600 hover:text-stone-900 transition-colors">
+                Início
+              </Link>
+            )}
+            {navVisible('shop') && (
+              <Link to="/menu" className="text-sm text-stone-600 hover:text-stone-900 transition-colors">
+                Loja
+              </Link>
+            )}
+            {navVisible('blog') && (
+              <Link to="/blog" className="text-sm text-stone-600 hover:text-stone-900 transition-colors">
+                Blog
+              </Link>
+            )}
+            {navVisible('orders') && (
+              <Link to="/minhas-encomendas" className="text-sm text-stone-600 hover:text-stone-900 transition-colors">
+                Minhas encomendas
+              </Link>
+            )}
+            {navVisible('events') && (
+              <Link to="/encomenda-evento" className="text-sm text-stone-600 hover:text-stone-900 transition-colors">
+                Eventos
+              </Link>
+            )}
+            {navVisible('contact') && (
+              <a
+                href={`https://wa.me/${whatsapp}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-stone-600 hover:text-stone-900 transition-colors"
+              >
+                Contacto
+              </a>
+            )}
           </nav>
 
           {/* Actions */}
@@ -107,29 +119,41 @@ export function Navbar() {
         {/* Mobile menu */}
         {menuOpen && (
           <div className="md:hidden border-t border-stone-100 bg-white px-4 py-2 flex flex-col">
-            <Link to="/" onClick={() => setMenuOpen(false)} className="text-sm text-stone-700 py-3">
-              Início
-            </Link>
-            <Link to="/menu" onClick={() => setMenuOpen(false)} className="text-sm text-stone-700 py-3">
-              Loja
-            </Link>
-            <Link to="/blog" onClick={() => setMenuOpen(false)} className="text-sm text-stone-700 py-3">
-              Blog
-            </Link>
-            <Link to="/minhas-encomendas" onClick={() => setMenuOpen(false)} className="text-sm text-stone-700 py-3">
-              Minhas encomendas
-            </Link>
-            <Link to="/encomenda-evento" onClick={() => setMenuOpen(false)} className="text-sm text-stone-700 py-3">
-              Eventos
-            </Link>
-            <a
-              href={`https://wa.me/${whatsapp}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm text-stone-700 py-3"
-            >
-              Contacto
-            </a>
+            {navVisible('home') && (
+              <Link to="/" onClick={() => setMenuOpen(false)} className="text-sm text-stone-700 py-3">
+                Início
+              </Link>
+            )}
+            {navVisible('shop') && (
+              <Link to="/menu" onClick={() => setMenuOpen(false)} className="text-sm text-stone-700 py-3">
+                Loja
+              </Link>
+            )}
+            {navVisible('blog') && (
+              <Link to="/blog" onClick={() => setMenuOpen(false)} className="text-sm text-stone-700 py-3">
+                Blog
+              </Link>
+            )}
+            {navVisible('orders') && (
+              <Link to="/minhas-encomendas" onClick={() => setMenuOpen(false)} className="text-sm text-stone-700 py-3">
+                Minhas encomendas
+              </Link>
+            )}
+            {navVisible('events') && (
+              <Link to="/encomenda-evento" onClick={() => setMenuOpen(false)} className="text-sm text-stone-700 py-3">
+                Eventos
+              </Link>
+            )}
+            {navVisible('contact') && (
+              <a
+                href={`https://wa.me/${whatsapp}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-stone-700 py-3"
+              >
+                Contacto
+              </a>
+            )}
           </div>
         )}
       </header>

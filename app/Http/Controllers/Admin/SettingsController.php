@@ -47,15 +47,22 @@ class SettingsController extends Controller
         'store_city',
         'store_country',
         'store_business_type',
+        'nav_links',
+        'footer_links',
     ];
 
     public function index(): JsonResponse
     {
+        $jsonKeys = ['nav_links', 'footer_links'];
         $settings = [];
         foreach (self::EDITABLE_KEYS as $key) {
             $value = Setting::get($key);
             if ($key === 'pay_on_delivery_enabled') {
                 $settings[$key] = $this->toBool($value, false);
+                continue;
+            }
+            if (in_array($key, $jsonKeys)) {
+                $settings[$key] = $value !== null ? json_decode($value, true) : null;
                 continue;
             }
             $settings[$key] = $value;
@@ -100,12 +107,21 @@ class SettingsController extends Controller
             'store_city'           => ['sometimes', 'nullable', 'string', 'max:100'],
             'store_country'        => ['sometimes', 'nullable', 'string', 'max:100'],
             'store_business_type'  => ['sometimes', 'nullable', 'string', 'max:60'],
+            'nav_links'            => ['sometimes', 'nullable', 'array'],
+            'nav_links.*'          => ['boolean'],
+            'footer_links'         => ['sometimes', 'nullable', 'array'],
+            'footer_links.*'       => ['boolean'],
         ]);
 
+        $jsonKeys = ['nav_links', 'footer_links'];
         foreach ($data as $key => $value) {
             if (in_array($key, self::EDITABLE_KEYS)) {
                 if ($key === 'pay_on_delivery_enabled') {
                     Setting::set($key, $value ? '1' : '0');
+                    continue;
+                }
+                if (in_array($key, $jsonKeys)) {
+                    Setting::set($key, $value !== null ? json_encode($value) : null);
                     continue;
                 }
                 Setting::set($key, $value);

@@ -443,6 +443,87 @@ function SettingsPage() {
           </div>
         </section>
 
+        {/* Navigation visibility */}
+        <section className="bg-white rounded-2xl border border-stone-200 divide-y divide-stone-100">
+          <div className="px-6 py-4">
+            <h2 className="font-medium text-stone-800">Visibilidade da navegação</h2>
+            <p className="text-xs text-stone-400 mt-0.5">Mostra ou oculta links no menu de navegação e no footer.</p>
+          </div>
+          <div className="p-6 space-y-6">
+            <div>
+              <p className="text-sm font-medium text-stone-700 mb-3">Navbar</p>
+              <div className="space-y-2">
+                {([
+                  { key: 'home',   label: 'Início' },
+                  { key: 'shop',   label: 'Loja' },
+                  { key: 'blog',   label: 'Blog' },
+                  { key: 'orders', label: 'Minhas encomendas' },
+                  { key: 'events', label: 'Eventos' },
+                  { key: 'contact',label: 'Contacto (WhatsApp)' },
+                ] as { key: string; label: string }[]).map(({ key, label }) => {
+                  const visible = form.nav_links?.[key] !== false
+                  return (
+                    <LinkToggleRow
+                      key={key}
+                      label={label}
+                      visible={visible}
+                      onToggle={() =>
+                        set('nav_links', { ...(form.nav_links ?? {}), [key]: !visible })
+                      }
+                    />
+                  )
+                })}
+              </div>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-stone-700 mb-3">Footer — Links úteis</p>
+              <div className="space-y-2">
+                {([
+                  { key: 'home',        label: 'Página inicial' },
+                  { key: 'blog',        label: 'Blog' },
+                  { key: 'shop',        label: 'Loja' },
+                  { key: 'account',     label: 'Minha conta' },
+                  { key: 'track_order', label: 'Monitorar pedido' },
+                ] as { key: string; label: string }[]).map(({ key, label }) => {
+                  const visible = form.footer_links?.[key] !== false
+                  return (
+                    <LinkToggleRow
+                      key={key}
+                      label={label}
+                      visible={visible}
+                      onToggle={() =>
+                        set('footer_links', { ...(form.footer_links ?? {}), [key]: !visible })
+                      }
+                    />
+                  )
+                })}
+              </div>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-stone-700 mb-3">Footer — Políticas</p>
+              <div className="space-y-2">
+                {([
+                  { key: 'privacy', label: 'Políticas de Privacidade' },
+                  { key: 'terms',   label: 'Termos e Condições' },
+                  { key: 'refund',  label: 'Política de Reembolso' },
+                ] as { key: string; label: string }[]).map(({ key, label }) => {
+                  const visible = form.footer_links?.[key] !== false
+                  return (
+                    <LinkToggleRow
+                      key={key}
+                      label={label}
+                      visible={visible}
+                      onToggle={() =>
+                        set('footer_links', { ...(form.footer_links ?? {}), [key]: !visible })
+                      }
+                    />
+                  )
+                })}
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Save bar */}
         <div className="flex items-center justify-between py-2">
           {saved && <span className="text-sm text-green-600 font-medium">Guardado com sucesso</span>}
@@ -633,6 +714,26 @@ function BrandColorPicker({ value, onChange }: { value: string; onChange: (hex: 
         </button>
         <span className="text-xs text-stone-400">Pré-visualização do botão</span>
       </div>
+    </div>
+  )
+}
+
+function LinkToggleRow({ label, visible, onToggle }: { label: string; visible: boolean; onToggle: () => void }) {
+  return (
+    <div className="flex items-center justify-between gap-4 border border-stone-200 rounded-xl px-4 py-3 bg-stone-50">
+      <span className="text-sm text-stone-700">{label}</span>
+      <button
+        type="button"
+        onClick={onToggle}
+        className={`relative w-10 h-5 rounded-full transition-colors ${visible ? 'bg-primary-500' : 'bg-stone-300'}`}
+        aria-label={`${visible ? 'Ocultar' : 'Mostrar'} ${label}`}
+      >
+        <span
+          className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${
+            visible ? 'translate-x-5' : 'translate-x-0.5'
+          }`}
+        />
+      </button>
     </div>
   )
 }

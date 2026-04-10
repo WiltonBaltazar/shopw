@@ -290,6 +290,8 @@ export interface AppSettings {
   store_city: string | null
   store_country: string | null
   store_business_type: string | null
+  nav_links: Record<string, boolean> | null
+  footer_links: Record<string, boolean> | null
 }
 
 export interface BlockedDate {

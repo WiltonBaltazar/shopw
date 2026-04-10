@@ -43,6 +43,7 @@ export function Footer() {
   const seo = useSeoSettings()
   const siteName = seo.seo_site_name || ''
   const footerLogo = seo.footer_logo_url || seo.brand_logo_url
+  const fv = (key: string) => seo.footer_links?.[key] !== false
 
   const socialLinks = [
     { key: 'instagram', url: seo.social_instagram, label: 'Instagram' },
@@ -101,11 +102,11 @@ export function Footer() {
             <h3 className="text-2xl/none font-medium">Links úteis</h3>
             <div className="mt-3 h-px bg-white/35" />
             <nav className="mt-6 flex flex-col gap-3 text-[15px] font-medium uppercase tracking-wide">
-              <Link to="/" className="hover:text-white/80 transition-colors">Página inicial</Link>
-              <Link to="/blog" className="hover:text-white/80 transition-colors">Blog</Link>
-              <Link to="/menu" className="hover:text-white/80 transition-colors">Loja</Link>
-              <Link to="/minhas-encomendas" className="hover:text-white/80 transition-colors">Minha conta</Link>
-              <Link to="/minhas-encomendas" className="hover:text-white/80 transition-colors">Monitorar pedido</Link>
+              {fv('home') && <Link to="/" className="hover:text-white/80 transition-colors">Página inicial</Link>}
+              {fv('blog') && <Link to="/blog" className="hover:text-white/80 transition-colors">Blog</Link>}
+              {fv('shop') && <Link to="/menu" className="hover:text-white/80 transition-colors">Loja</Link>}
+              {fv('account') && <Link to="/minhas-encomendas" className="hover:text-white/80 transition-colors">Minha conta</Link>}
+              {fv('track_order') && <Link to="/minhas-encomendas" className="hover:text-white/80 transition-colors">Monitorar pedido</Link>}
             </nav>
           </div>
 
@@ -113,15 +114,21 @@ export function Footer() {
             <h3 className="text-2xl/none font-medium">Políticas</h3>
             <div className="mt-3 h-px bg-white/35" />
             <nav className="mt-6 flex flex-col gap-3 text-[15px] font-medium uppercase tracking-wide">
-              <Link to="/politica-de-privacidade" className="hover:text-white/80 transition-colors">
-                Políticas de Privacidade
-              </Link>
-              <Link to="/termos-e-condicoes" className="hover:text-white/80 transition-colors">
-                Termos e Condições
-              </Link>
-              <Link to="/politica-de-reembolso" className="hover:text-white/80 transition-colors">
-                Política de Reembolso
-              </Link>
+              {fv('privacy') && (
+                <Link to="/politica-de-privacidade" className="hover:text-white/80 transition-colors">
+                  Políticas de Privacidade
+                </Link>
+              )}
+              {fv('terms') && (
+                <Link to="/termos-e-condicoes" className="hover:text-white/80 transition-colors">
+                  Termos e Condições
+                </Link>
+              )}
+              {fv('refund') && (
+                <Link to="/politica-de-reembolso" className="hover:text-white/80 transition-colors">
+                  Política de Reembolso
+                </Link>
+              )}
             </nav>
           </div>
         </div>
