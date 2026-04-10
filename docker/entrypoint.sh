@@ -5,7 +5,14 @@ cd /var/www/html
 
 # Generate app key if not set
 if [ -z "$APP_KEY" ]; then
-    php artisan key:generate --force
+    if [ "$APP_ENV" = "local" ]; then
+        # Dev only: generate an ephemeral key and export it so php-fpm inherits it
+        APP_KEY=$(php artisan key:generate --show --force)
+        export APP_KEY
+    else
+        echo "ERROR: APP_KEY is not set. Inject it as a secret via your deployment platform (e.g. Coolify)." >&2
+        exit 1
+    fi
 fi
 
 # Cache config/routes/views for production

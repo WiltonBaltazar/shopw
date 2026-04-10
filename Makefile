@@ -5,6 +5,7 @@ DC_PROD    = docker compose -f docker-compose.yml -f docker-compose.prod.yml
 # ─── Development ──────────────────────────────────────────────────────────────
 .PHONY: dev
 dev:
+	@grep -q '^APP_KEY=base64:' .env.development 2>/dev/null || php artisan key:generate
 	$(DC_DEV) up --build
 
 dev-d:
@@ -37,6 +38,7 @@ dev-shell:
 # ─── Staging ──────────────────────────────────────────────────────────────────
 .PHONY: staging
 staging:
+	@grep -q '^APP_KEY=base64:' .env.staging 2>/dev/null || { echo "ERROR: APP_KEY not set in .env.staging"; exit 1; }
 	$(DC_STAGING) up --build -d
 
 staging-down:
@@ -54,6 +56,7 @@ staging-shell:
 # ─── Production ───────────────────────────────────────────────────────────────
 .PHONY: prod
 prod:
+	@grep -q '^APP_KEY=base64:' .env.production 2>/dev/null || { echo "ERROR: APP_KEY not set in .env.production"; exit 1; }
 	$(DC_PROD) up --build -d
 
 prod-down:
