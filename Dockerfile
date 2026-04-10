@@ -91,6 +91,7 @@ RUN apk add --no-cache $PHPIZE_DEPS linux-headers \
 
 COPY docker/php/php.ini          /usr/local/etc/php/conf.d/app.ini
 COPY docker/php/xdebug.ini       /usr/local/etc/php/conf.d/xdebug.ini
+COPY docker/php/www.conf         /usr/local/etc/php-fpm.d/www.conf
 COPY docker/nginx/default.conf   /etc/nginx/http.d/default.conf
 COPY docker/supervisor/supervisord.dev.conf /etc/supervisor/conf.d/supervisord.conf
 
@@ -110,6 +111,7 @@ CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
 FROM base AS production
 
 COPY docker/php/php.ini               /usr/local/etc/php/conf.d/app.ini
+COPY docker/php/www.conf              /usr/local/etc/php-fpm.d/www.conf
 COPY docker/nginx/default.conf        /etc/nginx/http.d/default.conf
 COPY docker/supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
