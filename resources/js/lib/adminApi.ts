@@ -68,6 +68,7 @@ export interface AdminProduct {
   id: number
   name: string
   slug: string
+  delivery_weekday: number | null
   is_active?: boolean
   price_range: { min: number; max: number }
   images: { id: number; url: string; alt: string; is_primary: boolean }[]
@@ -195,7 +196,7 @@ export const createProduct = (data: object) =>
 export const updateProduct = (id: number, data: Partial<{
   name: string; slug: string; description: string
   seo_title: string | null; seo_description: string | null
-  category_id: number; requires_advance_order: boolean
+  category_id: number; requires_advance_order: boolean; delivery_weekday: number | null
   is_active: boolean; is_non_lactose: boolean; is_fitness: boolean; is_event: boolean; sort_order: number
 }>) => api.put(`/admin/products/${id}`, data).then((r) => r.data)
 

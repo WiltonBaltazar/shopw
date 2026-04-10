@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
-import { ShoppingBag, ChevronRight, Leaf, Dumbbell, Heart, Check, Star } from 'lucide-react'
+import { ShoppingBag, ChevronRight, Leaf, Dumbbell, Heart, Check, Star, Clock } from 'lucide-react'
 import type { ProductListItem, CustomerFavorite } from '~/lib/types'
 import { formatPrice } from '~/lib/utils'
 import { useCartStore } from '~/store/cart'
+
+const WEEKDAY_LABELS_PT = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado']
 
 interface Props {
   product: ProductListItem
@@ -17,6 +19,9 @@ export function ProductCard({ product, favorites }: Props) {
   const hasFavorite = favorites?.some((f) => f.product_id === product.id) ?? false
 
   const isSimple = product.product_type === 'simple' && product.default_variant_id != null
+  const deliveryWeekdayLabel = product.delivery_weekday != null
+    ? WEEKDAY_LABELS_PT[product.delivery_weekday] ?? null
+    : null
 
   function handleQuickAdd(e: React.MouseEvent) {
     e.preventDefault()
@@ -27,6 +32,7 @@ export function ProductCard({ product, favorites }: Props) {
       productName: product.name,
       productSlug: product.slug,
       productImage: product.primary_image?.url ?? '',
+      deliveryWeekday: product.delivery_weekday ?? null,
       variantId: product.default_variant_id,
       variantLabel: '',
       attributes: {},
@@ -149,6 +155,12 @@ export function ProductCard({ product, favorites }: Props) {
             </span>
           )}
         </div>
+        {deliveryWeekdayLabel && (
+          <p className="mt-2 inline-flex items-center gap-1.5 text-[11px] text-amber-700 bg-amber-50 border border-amber-200 rounded-full px-2.5 py-1">
+            <Clock size={11} />
+            Entrega apenas à {deliveryWeekdayLabel}
+          </p>
+        )}
       </div>
     </Link>
   )

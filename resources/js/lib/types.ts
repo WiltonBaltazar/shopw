@@ -65,6 +65,7 @@ export interface ProductListItem {
   name: string
   slug: string
   product_type: 'simple' | 'variable'
+  delivery_weekday: number | null
   price_range: { min: number; max: number }
   default_variant_id: number | null
   is_non_lactose: boolean
@@ -80,6 +81,7 @@ export interface Product {
   name: string
   slug: string
   product_type: 'simple' | 'variable'
+  delivery_weekday: number | null
   description: string
   seo_title: string | null
   seo_description: string | null

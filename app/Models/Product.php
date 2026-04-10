@@ -11,12 +11,13 @@ class Product extends Model
 {
     protected $fillable = [
         'category_id', 'name', 'slug', 'product_type', 'description', 'seo_title', 'seo_description',
-        'requires_advance_order', 'is_active', 'sort_order',
+        'requires_advance_order', 'delivery_weekday', 'is_active', 'sort_order',
         'is_non_lactose', 'is_fitness', 'is_event',
     ];
 
     protected $casts = [
         'requires_advance_order' => 'boolean',
+        'delivery_weekday'       => 'integer',
         'is_active'              => 'boolean',
         'is_non_lactose'         => 'boolean',
         'is_fitness'             => 'boolean',

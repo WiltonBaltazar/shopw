@@ -27,6 +27,7 @@ class ProductListResource extends JsonResource
             'slug' => $this->slug,
             'product_type' => $this->product_type ?? 'variable',
             'requires_advance_order' => $this->requires_advance_order,
+            'delivery_weekday' => $this->delivery_weekday,
             'is_non_lactose' => (bool) $this->is_non_lactose,
             'is_fitness'     => (bool) $this->is_fitness,
             'is_event'       => (bool) $this->is_event,

@@ -28,6 +28,16 @@ interface AttrVal { id: number; value: string; sort_order: number }
 interface Variant { id: number; price: number; is_available: boolean; attribute_value_ids: number[] }
 interface Addon { id: number; name: string; price: number; type: string; placeholder: string | null; options: string[] | null; is_required: boolean; sort_order: number }
 
+const DELIVERY_WEEKDAYS = [
+  { value: 0, label: 'Domingo' },
+  { value: 1, label: 'Segunda-feira' },
+  { value: 2, label: 'Terça-feira' },
+  { value: 3, label: 'Quarta-feira' },
+  { value: 4, label: 'Quinta-feira' },
+  { value: 5, label: 'Sexta-feira' },
+  { value: 6, label: 'Sábado' },
+]
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 function ProductEditPage() {
@@ -48,6 +58,7 @@ function ProductEditPage() {
   const [seoTitle, setSeoTitle] = useState('')
   const [seoDescription, setSeoDescription] = useState('')
   const [categoryId, setCategoryId] = useState<number | ''>('')
+  const [deliveryWeekday, setDeliveryWeekday] = useState<number | ''>('')
   const [requiresAdvance, setRequiresAdvance] = useState(false)
   const [isActive, setIsActive] = useState(true)
   const [isNonLactose, setIsNonLactose] = useState(false)
@@ -64,6 +75,7 @@ function ProductEditPage() {
     setSeoTitle((product as any).seo_title ?? '')
     setSeoDescription((product as any).seo_description ?? '')
     setCategoryId(product.category?.id ?? '')
+    setDeliveryWeekday((product as any).delivery_weekday ?? '')
     setRequiresAdvance((product as any).requires_advance_order ?? false)
     setIsActive((product as any).is_active ?? true)
     setIsNonLactose((product as any).is_non_lactose ?? false)
@@ -102,6 +114,7 @@ function ProductEditPage() {
       seo_title: seoTitle.trim() || null,
       seo_description: seoDescription.trim() || null,
       category_id: categoryId === '' ? undefined : Number(categoryId),
+      delivery_weekday: deliveryWeekday === '' ? null : Number(deliveryWeekday),
       requires_advance_order: requiresAdvance,
       is_active: isActive,
       is_non_lactose: isNonLactose,
@@ -229,7 +242,20 @@ function ProductEditPage() {
             <Label>Categoria</Label>
             <CategorySelect categories={categories} value={categoryId} onChange={setCategoryId} />
           </div>
-          <div className="flex flex-wrap gap-2 items-end pb-0.5">
+          <div>
+            <Label>Disponível para entrega</Label>
+            <select
+              value={deliveryWeekday}
+              onChange={(e) => setDeliveryWeekday(e.target.value === '' ? '' : Number(e.target.value))}
+              className="w-full border border-stone-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-primary-400 focus:ring-1 focus:ring-primary-400/20 bg-white"
+            >
+              <option value="">Qualquer dia</option>
+              {DELIVERY_WEEKDAYS.map((day) => (
+                <option key={day.value} value={day.value}>{day.label}</option>
+              ))}
+            </select>
+          </div>
+          <div className="col-span-2 flex flex-wrap gap-2 items-end pb-0.5">
             <Toggle label="Ativo" value={isActive} onChange={setIsActive} />
             <Toggle label="Pré-encomenda 24h" value={requiresAdvance} onChange={setRequiresAdvance} />
             <Toggle label="Sem Lactose" value={isNonLactose} onChange={setIsNonLactose} />

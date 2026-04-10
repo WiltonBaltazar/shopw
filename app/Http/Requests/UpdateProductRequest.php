@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateProductRequest extends FormRequest
@@ -27,6 +26,7 @@ class UpdateProductRequest extends FormRequest
             'seo_title'              => ['nullable', 'string', 'max:120'],
             'seo_description'        => ['nullable', 'string', 'max:300'],
             'requires_advance_order' => ['boolean'],
+            'delivery_weekday'       => ['nullable', 'integer', 'between:0,6'],
             'is_active'              => ['boolean'],
             'is_non_lactose'         => ['boolean'],
             'is_fitness'             => ['boolean'],

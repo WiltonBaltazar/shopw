@@ -23,6 +23,8 @@ interface AppliedCoupon {
   description?: string
 }
 
+const WEEKDAY_LABELS_PT = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado']
+
 function useDeliveryRegions() {
   const { data } = useQuery({
     queryKey: ['delivery-regions'],
@@ -345,6 +347,25 @@ function CheckoutPage() {
   const grandTotal = Math.max(0, cartTotal + deliveryFee - discountAmount)
   const effectivePaymentMethod: FormState['payment_method'] = payOnDeliveryEnabled ? form.payment_method : 'mpesa'
   const isMpesa = effectivePaymentMethod === 'mpesa'
+  const restrictedWeekdays = useMemo(() => {
+    const set = new Set<number>()
+    for (const item of items) {
+      const weekday = item.deliveryWeekday
+      if (typeof weekday === 'number' && weekday >= 0 && weekday <= 6) set.add(weekday)
+    }
+    return Array.from(set.values())
+  }, [items])
+  const hasConflictingWeekdayRules = restrictedWeekdays.length > 1
+  const requiredWeekday = restrictedWeekdays.length === 1 ? restrictedWeekdays[0] : null
+  const effectiveBlockedWeekdays = useMemo(() => {
+    const set = new Set<number>(blockedWeekdays)
+    if (requiredWeekday != null) {
+      for (let day = 0; day < 7; day++) {
+        if (day !== requiredWeekday) set.add(day)
+      }
+    }
+    return Array.from(set.values())
+  }, [blockedWeekdays, requiredWeekday])
 
   function set(field: keyof FormState, value: string) {
     setForm((f) => {
@@ -438,7 +459,16 @@ function CheckoutPage() {
     if (!form.customer_phone.trim()) errs.customer_phone = 'Campo obrigatório'
     else if (!/^\d{8,12}$/.test(form.customer_phone.replace(/\s/g, '')))
       errs.customer_phone = 'Número inválido'
+    if (hasConflictingWeekdayRules) {
+      errs.delivery_date = 'O carrinho tem produtos com dias fixos diferentes. Ajuste o carrinho para continuar.'
+    }
     if (!form.delivery_date) errs.delivery_date = 'Escolha uma data'
+    else if (requiredWeekday != null) {
+      const selectedWeekday = new Date(`${form.delivery_date}T00:00:00`).getDay()
+      if (selectedWeekday !== requiredWeekday) {
+        errs.delivery_date = `Os produtos do carrinho só podem ser entregues à ${WEEKDAY_LABELS_PT[requiredWeekday]}.`
+      }
+    }
     if (!form.delivery_time) errs.delivery_time = 'Escolha um horário'
     if (form.delivery_type === 'delivery' && deliveryRegions.length > 0 && !form.delivery_region_id)
       errs.delivery_region_id = 'Escolha uma região de entrega'
@@ -591,13 +621,23 @@ function CheckoutPage() {
 
             {/* Section 3: Date & Time */}
             <Section number="3" title="Quando">
+              {hasConflictingWeekdayRules && (
+                <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                  O carrinho tem produtos com dias de entrega diferentes. Faça encomendas separadas por dia.
+                </div>
+              )}
+              {requiredWeekday != null && !hasConflictingWeekdayRules && (
+                <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                  Este carrinho só pode ser entregue à {WEEKDAY_LABELS_PT[requiredWeekday]}.
+                </div>
+              )}
               <div className="space-y-1">
                 <label className="block text-xs font-medium text-stone-500 uppercase tracking-wider">Data de entrega *</label>
                 <DatePicker
                   value={form.delivery_date}
                   onChange={(d) => set('delivery_date', d)}
                   blockedDates={blockedDates}
-                  blockedWeekdays={blockedWeekdays}
+                  blockedWeekdays={effectiveBlockedWeekdays}
                   deliveryStart={deliveryStart}
                   deliveryEnd={deliveryEnd}
                   error={errors.delivery_date}

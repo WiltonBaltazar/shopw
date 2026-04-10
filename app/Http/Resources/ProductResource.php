@@ -27,6 +27,7 @@ class ProductResource extends JsonResource
             'seo_title' => $this->seo_title,
             'seo_description' => $this->seo_description,
             'requires_advance_order' => $this->requires_advance_order,
+            'delivery_weekday' => $this->delivery_weekday,
             'is_active' => (bool) $this->is_active,
             'is_non_lactose' => (bool) $this->is_non_lactose,
             'is_fitness'     => (bool) $this->is_fitness,

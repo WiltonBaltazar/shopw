@@ -6,6 +6,7 @@ export interface CartItem {
   productName: string
   productSlug: string
   productImage: string
+  deliveryWeekday?: number | null
   variantId: number
   variantLabel: string
   attributes: Record<string, string>
@@ -39,7 +40,11 @@ export const useCartStore = create<CartStore>()(
           set((state) => ({
             items: state.items.map((i) =>
               i.variantId === item.variantId
-                ? { ...i, quantity: i.quantity + item.quantity }
+                ? {
+                    ...i,
+                    quantity: i.quantity + item.quantity,
+                    deliveryWeekday: i.deliveryWeekday ?? item.deliveryWeekday ?? null,
+                  }
                 : i,
             ),
             lastAdded: item,

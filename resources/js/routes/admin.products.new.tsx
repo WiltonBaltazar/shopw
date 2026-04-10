@@ -13,6 +13,16 @@ export const Route = createFileRoute('/admin/products/new')({
 interface AttrInput { name: string; values: string[] }
 interface VariantInput { valueKeys: string[]; price: string; is_available: boolean }
 
+const DELIVERY_WEEKDAYS = [
+  { value: 0, label: 'Domingo' },
+  { value: 1, label: 'Segunda-feira' },
+  { value: 2, label: 'Terça-feira' },
+  { value: 3, label: 'Quarta-feira' },
+  { value: 4, label: 'Quinta-feira' },
+  { value: 5, label: 'Sexta-feira' },
+  { value: 6, label: 'Sábado' },
+]
+
 // Cartesian product of arrays
 function cartesian<T>(arrays: T[][]): T[][] {
   return arrays.reduce<T[][]>((acc, arr) => acc.flatMap((prev) => arr.map((val) => [...prev, val])), [[]])
@@ -30,6 +40,7 @@ function NewProductPage() {
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
   const [categoryId, setCategoryId] = useState<number | ''>('')
+  const [deliveryWeekday, setDeliveryWeekday] = useState<number | ''>('')
   const [requiresAdvance, setRequiresAdvance] = useState(true)
   const [isActive, setIsActive] = useState(true)
   const [isNonLactose, setIsNonLactose] = useState(false)
@@ -57,6 +68,7 @@ function NewProductPage() {
         product_type: productType,
         description: description.trim() || undefined,
         category_id: categoryId || undefined,
+        delivery_weekday: deliveryWeekday === '' ? null : Number(deliveryWeekday),
         requires_advance_order: requiresAdvance,
         is_active: isActive,
         is_non_lactose: isNonLactose,
@@ -180,7 +192,20 @@ function NewProductPage() {
             <Label>Categoria</Label>
             <CategorySelect categories={categories} value={categoryId} onChange={setCategoryId} />
           </div>
-          <div className="flex flex-wrap gap-2 items-end pb-0.5">
+          <div>
+            <Label>Disponível para entrega</Label>
+            <select
+              value={deliveryWeekday}
+              onChange={(e) => setDeliveryWeekday(e.target.value === '' ? '' : Number(e.target.value))}
+              className="w-full border border-stone-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-primary-400 focus:ring-1 focus:ring-primary-400/20 bg-white"
+            >
+              <option value="">Qualquer dia</option>
+              {DELIVERY_WEEKDAYS.map((day) => (
+                <option key={day.value} value={day.value}>{day.label}</option>
+              ))}
+            </select>
+          </div>
+          <div className="col-span-2 flex flex-wrap gap-2 items-end pb-0.5">
             <Chip active={isActive} onClick={() => setIsActive(!isActive)} label="Ativo" />
             <Chip active={requiresAdvance} onClick={() => setRequiresAdvance(!requiresAdvance)} label="Pré-encomenda 24h" />
             <Chip active={isNonLactose} onClick={() => setIsNonLactose(!isNonLactose)} label="Sem Lactose" />

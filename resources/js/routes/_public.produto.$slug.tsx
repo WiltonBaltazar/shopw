@@ -17,6 +17,8 @@ export const Route = createFileRoute('/_public/produto/$slug')({
   component: ProductPage,
 })
 
+const WEEKDAY_LABELS_PT = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado']
+
 function ProductPage() {
   const { slug } = Route.useParams()
   const { data: product, isLoading } = useProduct(slug)
@@ -280,6 +282,7 @@ function ProductPage() {
       productName: product.name,
       productSlug: product.slug,
       productImage: product.images[0]?.url ?? '',
+      deliveryWeekday: product.delivery_weekday ?? null,
       variantId: matchedVariant.id,
       variantLabel: buildVariantLabel(),
       attributes: Object.fromEntries(
@@ -326,6 +329,9 @@ function ProductPage() {
     matchedVariant.is_available &&
     flavoursFilled &&
     firstMissingAttrName === null
+  const deliveryWeekdayLabel = product.delivery_weekday != null
+    ? WEEKDAY_LABELS_PT[product.delivery_weekday] ?? null
+    : null
 
   const productTitle = product.seo_title ?? `${product.name} — ${seo.seo_site_name}`
   const productDescription = product.seo_description
@@ -542,6 +548,15 @@ function ProductPage() {
               <Clock size={14} />
               <span>
                 Encomende agora · <span className="font-semibold">Receba a partir de {earliestDelivery}</span>
+              </span>
+            </div>
+          )}
+
+          {deliveryWeekdayLabel && (
+            <div className="flex items-center gap-2 text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 mb-6">
+              <Clock size={14} />
+              <span>
+                Disponível para entrega apenas à <span className="font-semibold">{deliveryWeekdayLabel}</span>.
               </span>
             </div>
           )}

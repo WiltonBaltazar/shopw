@@ -44,6 +44,7 @@ class ProductController extends Controller
                 'product_type'           => $isSimple ? 'simple' : 'variable',
                 'description'            => $request->description,
                 'requires_advance_order' => $request->boolean('requires_advance_order', true),
+                'delivery_weekday'       => $request->filled('delivery_weekday') ? $request->integer('delivery_weekday') : null,
                 'is_active'              => $request->boolean('is_active', true),
                 'is_non_lactose'         => $request->boolean('is_non_lactose', false),
                 'is_fitness'             => $request->boolean('is_fitness', false),
