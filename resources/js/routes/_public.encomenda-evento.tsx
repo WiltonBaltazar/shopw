@@ -120,15 +120,23 @@ function ProductPicker({
 
   const matchedVariant = useMemo(() => {
     if (isSimple) return variants[0] ?? null
+    
+    // Strict match: Ensure all variant-driving attributes have a selection
+    const allVariantAttrsSelected = Array.from(variantAttrIds).every((id) => selectedValues[id] != null)
+    if (!allVariantAttrsSelected) return null
+
     const relevantIds = Object.entries(selectedValues)
       .filter(([attrId]) => variantAttrIds.has(Number(attrId)))
       .map(([, valId]) => valId)
-    if (relevantIds.length === 0 || relevantIds.length < variantAttrIds.size) return null
-    return variants.find((v) => relevantIds.every((id) => v.attribute_value_ids.includes(id))) ?? null
+      
+    return variants.find((v) => 
+      v.attribute_value_ids.length === relevantIds.length &&
+      relevantIds.every((id) => v.attribute_value_ids.includes(id))
+    ) ?? null
   }, [isSimple, variants, selectedValues, variantAttrIds])
 
   const flavoursFilled = flavourCount === 0 || flavourSelections.length === flavourCount
-  const canAdd = !!matchedVariant && flavoursFilled
+  const canAdd = !!matchedVariant && flavoursFilled && (matchedVariant.is_available ?? true)
 
   function handleSelectValue(attrId: number, valueId: number) {
     setSelectedValues((s) => ({ ...s, [attrId]: valueId }))
@@ -338,9 +346,11 @@ function ProductPicker({
           >
             {canAdd
               ? `Adicionar — ${formatPrice(matchedVariant!.price * quantity)}`
-              : !matchedVariant
-              ? 'Seleccione as opções'
-              : `Faltam ${flavourCount - flavourSelections.length} sabor${flavourCount - flavourSelections.length !== 1 ? 'es' : ''}`}
+              : matchedVariant && !(matchedVariant.is_available ?? true)
+              ? 'Indisponível'
+              : !flavoursFilled
+              ? `Faltam ${flavourCount - flavourSelections.length} sabor${flavourCount - flavourSelections.length !== 1 ? 'es' : ''}`
+              : 'Selecione as opções'}
           </button>
         </div>
       )}

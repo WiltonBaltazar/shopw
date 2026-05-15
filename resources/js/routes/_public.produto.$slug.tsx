@@ -115,14 +115,19 @@ function ProductPage() {
 
     // Only match against attributes that are actually used in variants
     const variantAttrIds = getVariantAttrIds(product)
+    
+    // Strict match: Ensure all variant-driving attributes have a selection
+    const allVariantAttrsSelected = Array.from(variantAttrIds).every((id) => selectedValues[id] != null)
+    if (!allVariantAttrsSelected) return null
+
     const relevantIds = selectedIds.filter((id) => {
       const attr = product.attributes.find((a) => a.values.some((v) => v.id === id))
       return attr && variantAttrIds.has(attr.id)
     })
-    if (relevantIds.length === 0) return null
 
     return (
       product.variants.find((v) =>
+        v.attribute_value_ids.length === relevantIds.length &&
         relevantIds.every((id) => v.attribute_value_ids.includes(id)),
       ) ?? null
     )
@@ -261,11 +266,13 @@ function ProductPage() {
     if (!product || product.product_type === 'simple') return null
     const missing = product.attributes
       .filter((a) => a.name !== 'Sabor')
+      // Only consider attributes that have at least one value NOT hidden by rules
+      .filter((a) => a.values.some((v) => !hiddenValueIds.has(v.id)))
       .find((a) => selectedValues[a.id] == null)
     if (missing) return missing.name
     if (saborAttr && flavourCount > 0 && !flavoursFilled) return 'Sabor'
     return null
-  }, [product, selectedValues, saborAttr, flavourCount, flavoursFilled])
+  }, [product, selectedValues, saborAttr, flavourCount, flavoursFilled, hiddenValueIds])
 
   // Earliest possible delivery date (always tomorrow)
   const earliestDelivery = useMemo(() => {
@@ -678,6 +685,10 @@ function ProductPage() {
                 ? 'Adicionar ao Carrinho'
                 : firstMissingAttrName
                 ? `Selecione ${firstMissingAttrName === 'Sabor' ? 'os sabores' : `o ${firstMissingAttrName.toLowerCase()}`}`
+                : matchedVariant && !matchedVariant.is_available
+                ? 'Indisponível'
+                : firstMissingAttrName === null && matchedVariant === null && product.product_type !== 'simple'
+                ? 'Esgotado'
                 : 'Selecione as opções'}
             </button>
           </div>
@@ -748,6 +759,10 @@ function ProductPage() {
               ? `Adicionar · ${formatPrice(priceToShow * quantity)}`
               : firstMissingAttrName
               ? `Selecione ${firstMissingAttrName === 'Sabor' ? 'os sabores' : `o ${firstMissingAttrName.toLowerCase()}`}`
+              : matchedVariant && !matchedVariant.is_available
+              ? 'Indisponível'
+              : firstMissingAttrName === null && matchedVariant === null && product.product_type !== 'simple'
+              ? 'Esgotado'
               : 'Selecione as opções'}
           </button>
         </div>
