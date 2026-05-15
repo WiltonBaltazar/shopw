@@ -136,7 +136,9 @@ function ProductPicker({
   }, [isSimple, variants, selectedValues, variantAttrIds])
 
   const flavoursFilled = flavourCount === 0 || flavourSelections.length === flavourCount
-  const canAdd = !!matchedVariant && flavoursFilled && (matchedVariant.is_available ?? true)
+  // When Sabor exists but isn't driven by Personalização, require a single selection
+  const saborFilled = !saborAttr || flavourCount > 0 || selectedValues[saborAttr.id] != null
+  const canAdd = !!matchedVariant && flavoursFilled && saborFilled && (matchedVariant.is_available ?? true)
 
   function handleSelectValue(attrId: number, valueId: number) {
     setSelectedValues((s) => ({ ...s, [attrId]: valueId }))
@@ -233,8 +235,8 @@ function ProductPicker({
       {/* Expanded config */}
       {open && (
         <div className="px-4 pb-4 pt-1 space-y-4 border-t border-stone-100">
-          {/* Attribute selectors */}
-          {!isSimple && attributes.filter((a) => a.name !== 'Sabor').map((attr) => (
+          {/* Attribute selectors (skip Sabor only when handled by the multi-select below) */}
+          {!isSimple && attributes.filter((a) => a.name !== 'Sabor' || flavourCount === 0).map((attr) => (
             <div key={attr.id}>
               <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">{attr.name}</p>
               <div className="flex flex-wrap gap-1.5">
@@ -350,6 +352,8 @@ function ProductPicker({
               ? 'Indisponível'
               : !flavoursFilled
               ? `Faltam ${flavourCount - flavourSelections.length} sabor${flavourCount - flavourSelections.length !== 1 ? 'es' : ''}`
+              : !saborFilled
+              ? 'Selecione o Sabor'
               : 'Selecione as opções'}
           </button>
         </div>

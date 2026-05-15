@@ -265,7 +265,8 @@ function ProductPage() {
   const firstMissingAttrName = useMemo(() => {
     if (!product || product.product_type === 'simple') return null
     const missing = product.attributes
-      .filter((a) => a.name !== 'Sabor')
+      // Skip Sabor only when it's handled by the multi-select (flavourCount > 0); otherwise require it as a normal attr
+      .filter((a) => a.name !== 'Sabor' || flavourCount === 0)
       // Only consider attributes that have at least one value NOT hidden by rules
       .filter((a) => a.values.some((v) => !hiddenValueIds.has(v.id)))
       .find((a) => selectedValues[a.id] == null)
@@ -568,8 +569,8 @@ function ProductPage() {
             </div>
           )}
 
-          {/* Attribute selectors (skip Sabor — rendered as multi-select below; skip for simple products) */}
-          {product.product_type !== 'simple' && product.attributes.filter((a) => a.name !== 'Sabor').map((attr) => (
+          {/* Attribute selectors (skip Sabor only when it's handled by the multi-select below) */}
+          {product.product_type !== 'simple' && product.attributes.filter((a) => a.name !== 'Sabor' || flavourCount === 0).map((attr) => (
             <div key={attr.id} className="mb-5">
               <p className="text-sm font-medium text-stone-700 mb-2">{attr.name}</p>
               <div className="flex flex-wrap gap-2">
