@@ -12,19 +12,19 @@
     {{-- Default Open Graph (overridden per-page by react-helmet-async) --}}
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="{{ \App\Models\Setting::get('seo_site_name', config('app.name')) }}" />
-    <meta property="og:locale" content="{{ config('app.locale', 'en') }}" />
+    <meta property="og:url" content="{{ url()->current() }}" />
     <meta property="og:title" content="{{ \App\Models\Setting::get('seo_home_title', config('app.name')) }}" />
     <meta property="og:description" content="{{ \App\Models\Setting::get('seo_home_description', '') }}" />
-    @if(\App\Models\Setting::get('seo_og_image'))
-    <meta property="og:image" content="{{ \App\Models\Setting::get('seo_og_image') }}" />
+    @if(\App\Models\Setting::getUrl('seo_og_image'))
+    <meta property="og:image" content="{{ \App\Models\Setting::getUrl('seo_og_image') }}" />
     @endif
 
-    @if(\App\Models\Setting::get('favicon_url'))
-    <link rel="icon" href="{{ \App\Models\Setting::get('favicon_url') }}" />
-    <link rel="shortcut icon" href="{{ \App\Models\Setting::get('favicon_url') }}" />
-    <link rel="apple-touch-icon" href="{{ \App\Models\Setting::get('favicon_url') }}" />
+    {{-- Favicon --}}
+    @if(\App\Models\Setting::getUrl('favicon_url'))
+    <link rel="icon" href="{{ \App\Models\Setting::getUrl('favicon_url') }}" />
+    <link rel="shortcut icon" href="{{ \App\Models\Setting::getUrl('favicon_url') }}" />
+    <link rel="apple-touch-icon" href="{{ \App\Models\Setting::getUrl('favicon_url') }}" />
     @endif
-
     {{-- LocalBusiness structured data --}}
     @php
     $s            = \App\Models\Setting::class;

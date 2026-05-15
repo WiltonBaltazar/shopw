@@ -25,6 +25,11 @@ fi
 # Run migrations
 php artisan migrate --force
 
+# Ensure storage directories exist for persistence
+mkdir -p storage/app/public/settings
+mkdir -p storage/framework/{cache,sessions,views}
+mkdir -p storage/logs
+
 # Fix storage permissions at runtime
 chown -R www-data:www-data storage bootstrap/cache
 

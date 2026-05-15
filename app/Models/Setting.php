@@ -21,4 +21,23 @@ class Setting extends Model
     {
         static::updateOrCreate(['key' => $key], ['value' => $value]);
     }
+
+    /**
+     * Get a setting value as a full URL if it's an image path.
+     */
+    public static function getUrl(string $key, mixed $default = null): ?string
+    {
+        $value = static::get($key);
+        if (!$value) {
+            return $default;
+        }
+
+        // If it's already a full URL, return it
+        if (filter_var($value, FILTER_VALIDATE_URL)) {
+            return $value;
+        }
+
+        // Otherwise assume it's a relative path in storage
+        return asset('storage/' . $value);
+    }
 }

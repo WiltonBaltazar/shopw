@@ -54,8 +54,15 @@ class SettingsController extends Controller
     public function index(): JsonResponse
     {
         $jsonKeys = ['nav_links', 'footer_links'];
+        $imageKeys = ['brand_logo_url', 'footer_logo_url', 'seo_og_image', 'hero_image_url', 'favicon_url'];
+        
         $settings = [];
         foreach (self::EDITABLE_KEYS as $key) {
+            if (in_array($key, $imageKeys)) {
+                $settings[$key] = Setting::getUrl($key);
+                continue;
+            }
+
             $value = Setting::get($key);
             if ($key === 'pay_on_delivery_enabled') {
                 $settings[$key] = $this->toBool($value, false);
@@ -114,6 +121,8 @@ class SettingsController extends Controller
         ]);
 
         $jsonKeys = ['nav_links', 'footer_links'];
+        $imageKeys = ['brand_logo_url', 'footer_logo_url', 'seo_og_image', 'hero_image_url', 'favicon_url'];
+
         foreach ($data as $key => $value) {
             if (in_array($key, self::EDITABLE_KEYS)) {
                 if ($key === 'pay_on_delivery_enabled') {
@@ -124,6 +133,12 @@ class SettingsController extends Controller
                     Setting::set($key, $value !== null ? json_encode($value) : null);
                     continue;
                 }
+                
+                // If it's an image key and the value is a full URL, strip it back to relative path
+                if (in_array($key, $imageKeys) && $value && str_contains($value, '/storage/settings/')) {
+                    $value = 'settings/' . basename($value);
+                }
+
                 Setting::set($key, $value);
             }
         }
@@ -153,8 +168,12 @@ class SettingsController extends Controller
         // Delete old file if it was one we uploaded (path starts with settings/)
         $old = Setting::get($key);
         if ($old) {
-            $parsed = parse_url($old, PHP_URL_PATH);
-            $relative = ltrim(str_replace('/storage/', '', $parsed ?? ''), '/');
+            $relative = $old;
+            if (filter_var($old, FILTER_VALIDATE_URL)) {
+                $parsed = parse_url($old, PHP_URL_PATH);
+                $relative = ltrim(str_replace('/storage/', '', $parsed ?? ''), '/');
+            }
+            
             if (str_starts_with($relative, 'settings/')) {
                 Storage::disk('public')->delete($relative);
             }
@@ -163,10 +182,11 @@ class SettingsController extends Controller
         $path = $key === 'favicon_url'
             ? $request->file('image')->store('settings', 'public')
             : $this->storeAsWebp($request->file('image'), 'settings');
-        $url  = asset('storage/' . $path);
-        Setting::set($key, $url);
+        
+        // Store relative path
+        Setting::set($key, $path);
 
-        return response()->json(['url' => $url]);
+        return response()->json(['url' => asset('storage/' . $path)]);
     }
 
     private function toBool(mixed $value, bool $default = false): bool
